@@ -22,6 +22,10 @@ class Contadores extends BaseController
 
     public function crear()
     {
+
+        // TODO: Reemplazar esta consulta directa cuando exista ServicioModel.
+        // Actualmente se usa para obtener los servicios necesarios en el CRUD de contadores.
+
         $db = db_connect();
 
         $data['servicios'] = $db->table('servicios')
@@ -111,6 +115,9 @@ class Contadores extends BaseController
                 'Contador no encontrado'
             );
         }
+
+        // TODO: Reemplazar esta consulta directa cuando exista ServicioModel.
+        // Actualmente se usa para obtener los servicios necesarios en el CRUD de contadores.
 
         $db = db_connect();
 
