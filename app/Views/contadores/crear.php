@@ -1,170 +1,166 @@
-<!DOCTYPE html>
-<html lang="es">
+<?= $this->extend('layouts/main') ?>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<?= $this->section('content') ?>
 
-    <title>Registrar contador</title>
+<h1 class="mt-4">Registrar contador</h1>
 
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet">
-</head>
+<ol class="breadcrumb mb-4">
+    <li class="breadcrumb-item">
+        <a href="<?= base_url('contadores') ?>">Contadores</a>
+    </li>
+    <li class="breadcrumb-item active">Nuevo contador</li>
+</ol>
 
-<body>
+<?php if (session()->getFlashdata('errores')): ?>
 
-<div class="container py-4 py-md-5">
+    <div class="alert alert-danger">
 
-    <div class="row justify-content-center">
+        <ul class="mb-0">
 
-        <div class="col-12 col-lg-10">
+            <?php foreach (session()->getFlashdata('errores') as $error): ?>
 
-            <h1 class="mb-4">Registrar contador</h1>
+                <li><?= esc($error) ?></li>
 
-            <?php if (session()->getFlashdata('errores')): ?>
+            <?php endforeach; ?>
 
-                <div class="alert alert-danger">
+        </ul>
 
-                    <ul class="mb-0">
+    </div>
 
-                        <?php foreach (session()->getFlashdata('errores') as $error): ?>
+<?php endif; ?>
 
-                            <li><?= esc($error) ?></li>
+<?php if (session()->getFlashdata('error')): ?>
+
+    <div class="alert alert-danger">
+        <?= esc(session()->getFlashdata('error')) ?>
+    </div>
+
+<?php endif; ?>
+
+<div class="card mb-4">
+
+    <div class="card-header">
+        <i class="fas fa-plus me-1"></i>
+        Datos del nuevo contador
+    </div>
+
+    <div class="card-body">
+
+        <form action="<?= base_url('contadores/guardar') ?>" method="post">
+
+            <?= csrf_field() ?>
+
+            <div class="row g-3">
+
+                <div class="col-12">
+
+                    <label for="servicio_id" class="form-label">
+                        Servicio
+                    </label>
+
+                    <select
+                        name="servicio_id"
+                        id="servicio_id"
+                        class="form-select"
+                        required>
+
+                        <option value="">
+                            Seleccione un servicio
+                        </option>
+
+                        <?php foreach ($servicios as $servicio): ?>
+
+                            <option
+                                value="<?= $servicio['id'] ?>"
+                                <?= old('servicio_id') == $servicio['id'] ? 'selected' : '' ?>>
+
+                                <?= esc($servicio['codigo']) ?>
+                                -
+                                <?= esc($servicio['cliente']) ?>
+                                -
+                                <?= esc($servicio['direccion'] ?? 'Sin dirección') ?>
+
+                            </option>
 
                         <?php endforeach; ?>
 
-                    </ul>
+                    </select>
 
                 </div>
 
-            <?php endif; ?>
+                <div class="col-12 col-md-6">
 
-            <?php if (session()->getFlashdata('error')): ?>
+                    <label for="numero_serie" class="form-label">
+                        Número de serie
+                    </label>
 
-                <div class="alert alert-danger">
-                    <?= esc(session()->getFlashdata('error')) ?>
-                </div>
-
-            <?php endif; ?>
-
-            <form action="<?= base_url('contadores/guardar') ?>" method="post">
-
-                <?= csrf_field() ?>
-
-                <div class="row g-3">
-
-                    <div class="col-12">
-
-                        <label for="servicio_id" class="form-label">
-                            Servicio
-                        </label>
-
-                        <select
-                            name="servicio_id"
-                            id="servicio_id"
-                            class="form-select"
-                            required>
-
-                            <option value="">
-                                Seleccione un servicio
-                            </option>
-
-                            <?php foreach ($servicios as $servicio): ?>
-
-                                <option
-                                    value="<?= $servicio['id'] ?>"
-                                    <?= old('servicio_id') == $servicio['id'] ? 'selected' : '' ?>>
-
-                                    <?= esc($servicio['codigo']) ?>
-                                    -
-                                    <?= esc($servicio['cliente']) ?>
-                                    -
-                                    <?= esc($servicio['direccion'] ?? 'Sin dirección') ?>
-
-                                </option>
-
-                            <?php endforeach; ?>
-
-                        </select>
-
-                    </div>
-
-                    <div class="col-12 col-md-6">
-
-                        <label for="numero_serie" class="form-label">
-                            Número de serie
-                        </label>
-
-                        <input
-                            type="text"
-                            name="numero_serie"
-                            id="numero_serie"
-                            class="form-control"
-                            maxlength="40"
-                            value="<?= esc(old('numero_serie')) ?>">
-
-                    </div>
-
-                    <div class="col-12 col-md-6">
-
-                        <label for="lectura_inicial" class="form-label">
-                            Lectura inicial
-                        </label>
-
-                        <input
-                            type="number"
-                            name="lectura_inicial"
-                            id="lectura_inicial"
-                            class="form-control"
-                            value="<?= esc(old('lectura_inicial', '0')) ?>"
-                            min="0"
-                            step="0.01"
-                            required>
-
-                    </div>
-
-                    <div class="col-12 col-md-6">
-
-                        <label for="fecha_instalacion" class="form-label">
-                            Fecha de instalación
-                        </label>
-
-                        <input
-                            type="date"
-                            name="fecha_instalacion"
-                            id="fecha_instalacion"
-                            class="form-control"
-                            value="<?= esc(old('fecha_instalacion')) ?>"
-                            required>
-
-                    </div>
+                    <input
+                        type="text"
+                        name="numero_serie"
+                        id="numero_serie"
+                        class="form-control"
+                        maxlength="40"
+                        value="<?= esc(old('numero_serie')) ?>">
 
                 </div>
 
-                <div class="d-grid gap-2 d-sm-flex mt-4">
+                <div class="col-12 col-md-6">
 
-                    <button type="submit" class="btn btn-primary">
-                        Guardar contador
-                    </button>
+                    <label for="lectura_inicial" class="form-label">
+                        Lectura inicial
+                    </label>
 
-                    <a
-                        href="<?= base_url('contadores') ?>"
-                        class="btn btn-secondary">
-
-                        Cancelar
-
-                    </a>
+                    <input
+                        type="number"
+                        name="lectura_inicial"
+                        id="lectura_inicial"
+                        class="form-control"
+                        value="<?= esc(old('lectura_inicial', '0')) ?>"
+                        min="0"
+                        step="0.01"
+                        required>
 
                 </div>
 
-            </form>
+                <div class="col-12 col-md-6">
 
-        </div>
+                    <label for="fecha_instalacion" class="form-label">
+                        Fecha de instalación
+                    </label>
+
+                    <input
+                        type="date"
+                        name="fecha_instalacion"
+                        id="fecha_instalacion"
+                        class="form-control"
+                        value="<?= esc(old('fecha_instalacion')) ?>"
+                        required>
+
+                </div>
+
+            </div>
+
+            <div class="d-grid gap-2 d-sm-flex mt-4">
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save me-1"></i>
+                    Guardar contador
+                </button>
+
+                <a
+                    href="<?= base_url('contadores') ?>"
+                    class="btn btn-secondary">
+
+                    Cancelar
+
+                </a>
+
+            </div>
+
+        </form>
 
     </div>
 
 </div>
 
-</body>
-</html>
+<?= $this->endSection() ?>
