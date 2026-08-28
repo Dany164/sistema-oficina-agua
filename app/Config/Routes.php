@@ -6,3 +6,5 @@ use CodeIgniter\Router\RouteCollection;
 $routes->get('/', 'Home::index');
 $routes->get('/main', 'Main::index');
 $routes->get('/tablas', 'Main::tablas');
+$routes->get('login', 'Auth::login');
+$routes->post('login', 'Auth::attemptLogin');
