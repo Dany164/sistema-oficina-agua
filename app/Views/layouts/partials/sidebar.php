@@ -7,14 +7,13 @@
                 Dashboard
             </a>
 
-            <a class="nav-link" href="<?= base_url('usuarios') ?>">
-                <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
-                Usuarios
+            <a class="nav-link" href="<?= base_url('clientes') ?>">
+                <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
+                Clientes
             </a>
 
-            
             <a class="nav-link" href="<?= base_url('tablas') ?>">
-            <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
+                <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
                 Tablas
             </a>
             
