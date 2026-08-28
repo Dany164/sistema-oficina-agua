@@ -33,9 +33,9 @@
                     <div class="d-flex align-items-center justify-content-between small">
                         <div class="text-muted">Copyright &copy; Sistema Oficina de Agua <?= date('Y') ?></div>
                         <div>
-                            <a href="#">Política de Privacidad</a>
+                            <a href="#">Política de Privacidad (Pendiente)</a>
                             &middot;
-                            <a href="#">Términos y Condiciones</a>
+                            <a href="#">Términos y Condiciones (Pendiente)</a>
                         </div>
                     </div>
                 </div>

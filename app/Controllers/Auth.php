@@ -25,9 +25,9 @@ class Auth extends BaseController
         ];
 
         if (! $this->validate($rules)) {
-            return redirect()->back()
-                ->withInput()
-                ->with('error', 'Ingresa un correo y contraseña válidos.');
+        return redirect()->back()
+        ->withInput()
+        ->with('errors', $this->validator->getErrors());
         }
 
         $email    = $this->request->getPost('email');
