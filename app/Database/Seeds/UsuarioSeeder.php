@@ -13,10 +13,9 @@ class UsuarioSeeder extends Seeder
             'nombre'        => 'Administrador General',
             'email'         => 'admin@oficinaagua.com',
             'password_hash' => password_hash('CambiaEstaClave123!', PASSWORD_DEFAULT),
-            'activo'        => 1,
-            'created_at'    => date('Y-m-d H:i:s'),
+
         ];
 
-        $this->db->table('usuarios')->insert($data);
+        $this->db->table('Tb_Usuarios')->insert($data);
     }
 }

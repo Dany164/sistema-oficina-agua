@@ -6,26 +6,19 @@ use CodeIgniter\Model;
 
 class UsuarioModel extends Model
 {
-    protected $table            = 'usuarios';
-    protected $primaryKey       = 'id';
-    protected $allowedFields    = ['rol_id', 'nombre', 'email', 'password_hash', 'activo'];
+    protected $table            = 'Tb_Usuarios';
+    protected $primaryKey       = 'usuario_id';
+    protected $allowedFields    = ['rol_id', 'nombre', 'email', 'password_hash'];
 
-    protected $useTimestamps    = true;
-    protected $createdField     = 'created_at';
-    protected $updatedField     = 'updated_at';
-
-    // Nunca se debe devolver el hash en un array de resultados por accidente
     protected $returnType       = 'array';
 
     protected $validationRules = [
-        'nombre' => 'required|min_length[3]|max_length[120]',
-        'email'  => 'required|valid_email|is_unique[usuarios.email,id,{id}]',
+        'nombre' => 'required|min_length[3]|max_length[100]',
+        'email'  => 'required|valid_email|is_unique[Tb_Usuarios.email,usuario_id,{usuario_id}]',
     ];
 
     public function findByEmail(string $email)
     {
-        return $this->where('email', $email)
-                     ->where('activo', 1)
-                     ->first();
+        return $this->where('email', $email)->first();
     }
 }
