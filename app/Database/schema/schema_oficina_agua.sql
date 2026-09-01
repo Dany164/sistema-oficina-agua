@@ -20,6 +20,10 @@ CREATE TABLE Tb_Roles (
     UNIQUE KEY uk_roles_nombre (nombre)
 ) ENGINE=InnoDB;
 
+INSERT INTO Tb_Roles (nombre) VALUES
+    ('Administrador'),
+    ('Secretaria'),
+    ('Lector');
 -- ---------------------------------------------------------
 -- Tb_Clientes
 -- ---------------------------------------------------------
