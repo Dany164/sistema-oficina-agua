@@ -110,7 +110,7 @@ CREATE TABLE Tb_Metodos_Pago (
 -- ---------------------------------------------------------
 -- Tb_lecturas  (auditada)
 -- ---------------------------------------------------------
-CREATE TABLE Tb_lecturas (
+CREATE TABLE Tb_Lecturas (
     lectura_id         INT UNSIGNED NOT NULL AUTO_INCREMENT,
     lectura_anterior   INT NOT NULL,
     lectura_actual     INT NOT NULL,
@@ -163,7 +163,7 @@ CREATE TABLE Tb_Pagos (
     KEY idx_pagos_usuario (usuario_id),
     KEY idx_pagos_metodo (metodos_pago_id),
     CONSTRAINT fk_pagos_lectura
-        FOREIGN KEY (lectura_id) REFERENCES Tb_lecturas(lectura_id),
+        FOREIGN KEY (lectura_id) REFERENCES Tb_Lecturas(lectura_id),
     CONSTRAINT fk_pagos_usuario
         FOREIGN KEY (usuario_id) REFERENCES Tb_Usuarios(usuario_id),
     CONSTRAINT fk_pagos_metodo
@@ -309,11 +309,11 @@ END$$
 -- Tb_lecturas
 -- ---------------------------------------------------------
 CREATE TRIGGER trg_lecturas_insert
-AFTER INSERT ON Tb_lecturas
+AFTER INSERT ON Tb_Lecturas
 FOR EACH ROW
 BEGIN
     INSERT INTO Tb_Auditorias (tabla, registro_id, accion, usuario_id, datos_nuevos, fecha)
-    VALUES ('Tb_lecturas', NEW.lectura_id, 'INSERT', @usuario_actual,
+    VALUES ('Tb_Lecturas', NEW.lectura_id, 'INSERT', @usuario_actual,
         JSON_OBJECT(
             'lectura_anterior', NEW.lectura_anterior,
             'lectura_actual', NEW.lectura_actual,
@@ -331,11 +331,11 @@ BEGIN
 END$$
 
 CREATE TRIGGER trg_lecturas_update
-AFTER UPDATE ON Tb_lecturas
+AFTER UPDATE ON Tb_Lecturas
 FOR EACH ROW
 BEGIN
     INSERT INTO Tb_Auditorias (tabla, registro_id, accion, usuario_id, datos_anteriores, datos_nuevos, fecha)
-    VALUES ('Tb_lecturas', NEW.lectura_id, 'UPDATE', @usuario_actual,
+    VALUES ('Tb_Lecturas', NEW.lectura_id, 'UPDATE', @usuario_actual,
         JSON_OBJECT(
             'lectura_anterior', OLD.lectura_anterior,
             'lectura_actual', OLD.lectura_actual,
@@ -367,11 +367,11 @@ BEGIN
 END$$
 
 CREATE TRIGGER trg_lecturas_delete
-AFTER DELETE ON Tb_lecturas
+AFTER DELETE ON Tb_Lecturas
 FOR EACH ROW
 BEGIN
     INSERT INTO Tb_Auditorias (tabla, registro_id, accion, usuario_id, datos_anteriores, fecha)
-    VALUES ('Tb_lecturas', OLD.lectura_id, 'DELETE', @usuario_actual,
+    VALUES ('Tb_Lecturas', OLD.lectura_id, 'DELETE', @usuario_actual,
         JSON_OBJECT(
             'lectura_anterior', OLD.lectura_anterior,
             'lectura_actual', OLD.lectura_actual,
