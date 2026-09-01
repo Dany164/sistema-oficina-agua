@@ -63,7 +63,7 @@ class Auth extends BaseController
 
         // 6. Guardar en sesión SOLO lo necesario. Nunca el password_hash.
         session()->set([
-            'usuario_id'  => $usuario['id'],
+            'usuario_id'  => $usuario['usuario_id'],
             'nombre'      => $usuario['nombre'],
             'rol_id'      => $usuario['rol_id'],
             'logged_in'   => true,
