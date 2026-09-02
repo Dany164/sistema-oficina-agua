@@ -32,16 +32,10 @@
                 Tarifas
 
             </a>
-
-            <a class="nav-link" href="<?= base_url('tablas') ?>">
-                <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
-                Tablas
-            </a>
-
         </div>
     </div>
     <div class="sb-sidenav-footer">
-        <div class="small">Conectado como:</div>
-        Desarrollador
+    <div class="small">Conectado como:</div>
+    <?= esc(session()->get('nombre')) ?> (<?= esc(session()->get('rol_nombre')) ?>)
     </div>
 </nav>

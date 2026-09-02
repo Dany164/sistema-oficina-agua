@@ -22,7 +22,6 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
 
     // Rutas de main =========================================================================
     $routes->get('/main', 'Main::index');
-    $routes->get('/tablas', 'Main::tablas'); //Solo era Ejemplo, TODO: Borrar ruta, vista y todo lo relacionado
 
     // Rutas de Tarifas =========================================================================
     $routes->group('tarifas', static function ($routes) {

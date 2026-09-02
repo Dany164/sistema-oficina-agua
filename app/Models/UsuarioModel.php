@@ -19,6 +19,9 @@ class UsuarioModel extends Model
 
     public function findByEmail(string $email)
     {
-        return $this->where('email', $email)->first();
+        return $this->select('Tb_Usuarios.*, Tb_Roles.nombre AS rol_nombre')
+                ->join('Tb_Roles', 'Tb_Roles.rol_id = Tb_Usuarios.rol_id')
+                ->where('Tb_Usuarios.email', $email)
+                ->first();
     }
 }
