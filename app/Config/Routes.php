@@ -24,6 +24,17 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
     $routes->get('/main', 'Main::index');
     $routes->get('/tablas', 'Main::tablas'); //Solo era Ejemplo, TODO: Borrar ruta, vista y todo lo relacionado
 
+    // Rutas de Tarifas =========================================================================
+    $routes->group('tarifas', static function ($routes) {
+        $routes->get('/', 'Tarifas::index');
+        $routes->get('new', 'Tarifas::new');
+        $routes->post('create', 'Tarifas::create');
+        $routes->get('edit/(:num)', 'Tarifas::edit/$1');
+        $routes->post('update/(:num)', 'Tarifas::update/$1');
+    });
+
+
+
     // Rutas de Clientes =========================================================================
     $routes->group('clientes', static function ($routes) {
         $routes->get('/', 'Clientes::index');
@@ -45,3 +56,5 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
     });
 
 });
+});
+
