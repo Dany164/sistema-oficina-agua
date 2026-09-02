@@ -34,4 +34,14 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->post('delete/(:num)', 'Clientes::delete/$1');
     });
 
+    // Rutas de Servicios =========================================================================
+    $routes->group('servicios', static function ($routes) {
+        $routes->get('/', 'Servicios::index');
+        $routes->get('new', 'Servicios::new');
+        $routes->post('create', 'Servicios::create');
+        $routes->get('edit/(:num)', 'Servicios::edit/$1');
+        $routes->post('update/(:num)', 'Servicios::update/$1');
+        $routes->post('delete/(:num)', 'Servicios::delete/$1');
+    });
+
 });

@@ -18,6 +18,13 @@
                 Contadores
             </a>
 
+            <a class="nav-link" href="<?= base_url('servicios') ?>">
+                <div class="sb-nav-link-icon">
+                    <i class="fas fa-faucet-drip"></i>
+                </div>
+                Servicios
+            </a>
+
             <a class="nav-link" href="<?= base_url('tablas') ?>">
                 <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
                 Tablas
