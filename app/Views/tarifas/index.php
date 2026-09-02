@@ -6,7 +6,7 @@
 
 <ol class="breadcrumb mb-4">
     <li class="breadcrumb-item">
-        <a href="<?= base_url('/') ?>">Dashboard</a>
+        <a href="<?= base_url('main') ?>">Dashboard</a>
     </li>
     <li class="breadcrumb-item active">Tarifas</li>
 </ol>
