@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title><?= $title ?? 'Mi Proyecto' ?> - SB Admin</title>
+    <title><?= $title ?? 'Dashboard' ?> - Oficina de Agua</title>
 
     <!-- CSS de librerías externas (CDN) -->
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet">

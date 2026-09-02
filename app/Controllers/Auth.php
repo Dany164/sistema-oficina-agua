@@ -66,6 +66,7 @@ class Auth extends BaseController
             'usuario_id'  => $usuario['usuario_id'],
             'nombre'      => $usuario['nombre'],
             'rol_id'      => $usuario['rol_id'],
+            'rol_nombre' => $usuario['rol_nombre'], //para que se muestre en el sidebar
             'logged_in'   => true,
         ]);
 
