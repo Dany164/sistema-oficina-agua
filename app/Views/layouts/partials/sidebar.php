@@ -18,11 +18,19 @@
                 Contadores
             </a>
 
+
+            <a class="nav-link" href="<?= base_url('servicios') ?>">
+                <div class="sb-nav-link-icon">
+                    <i class="fas fa-faucet-drip"></i>
+                </div>
+                Servicios
+
             <a class="nav-link" href="<?= base_url('tarifas') ?>">
                 <div class="sb-nav-link-icon">
                     <i class="fas fa-money-bill-wave"></i>
                 </div>
                 Tarifas
+
             </a>
 
             <a class="nav-link" href="<?= base_url('tablas') ?>">
