@@ -56,5 +56,4 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
     });
 
 });
-});
 
