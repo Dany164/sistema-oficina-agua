@@ -32,6 +32,14 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->post('update/(:num)', 'Tarifas::update/$1');
     });
 
+    // Rutas de Lecturas =========================================================================
+    $routes->group('lecturas', static function ($routes) {
+        $routes->get('/', 'Lecturas::index');
+        $routes->get('new', 'Lecturas::new');
+        $routes->post('create', 'Lecturas::create');
+        $routes->get('recibo/(:num)', 'Lecturas::recibo/$1');
+    });
+
 
 
     // Rutas de Clientes =========================================================================
@@ -53,6 +61,4 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->post('update/(:num)', 'Servicios::update/$1');
         $routes->post('delete/(:num)', 'Servicios::delete/$1');
     });
-
 });
-
