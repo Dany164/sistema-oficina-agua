@@ -42,7 +42,7 @@ class Tarifas extends BaseController
             ->getResultArray();
 
         $data = [
-            'titulo' => 'Tarifas',
+            'title' => 'Tarifas',
             'tarifas' => $tarifas,
         ];
 
@@ -55,7 +55,7 @@ class Tarifas extends BaseController
     public function new()
     {
         $data = [
-            'titulo' => 'Nueva Tarifa',
+            'title' => 'Nueva Tarifa',
             'tiposServicio' => $this->obtenerTiposServicio(),
         ];
 
@@ -199,7 +199,7 @@ class Tarifas extends BaseController
         }
 
         $data = [
-            'titulo' => 'Editar Tarifa',
+            'title' => 'Editar Tarifa',
             'tarifa' => $tarifa,
             'tiposServicio' => $this->obtenerTiposServicio(),
         ];
