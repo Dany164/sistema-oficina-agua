@@ -19,6 +19,7 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
     $routes->get('contadores/editar/(:num)', 'Contadores::editar/$1');
     $routes->post('contadores/actualizar/(:num)', 'Contadores::actualizar/$1');
     $routes->post('contadores/retirar/(:num)', 'Contadores::retirar/$1');
+    $routes->post('contadores/reactivar/(:num)', 'Contadores::reactivar/$1');
 
     // Rutas de main =========================================================================
     $routes->get('/main', 'Main::index');
