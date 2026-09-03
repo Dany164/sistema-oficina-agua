@@ -18,12 +18,20 @@
                 Contadores
             </a>
 
+            <a class="nav-link" href="<?= base_url('lecturas') ?>">
+                <div class="sb-nav-link-icon">
+                    <i class="fas fa-tachometer-alt"></i>
+                </div>
+                Lecturas
+            </a>
+
 
             <a class="nav-link" href="<?= base_url('servicios') ?>">
                 <div class="sb-nav-link-icon">
                     <i class="fas fa-faucet-drip"></i>
                 </div>
                 Servicios
+            </a>
 
             <a class="nav-link" href="<?= base_url('tarifas') ?>">
                 <div class="sb-nav-link-icon">
