@@ -6,9 +6,16 @@
 
 <ol class="breadcrumb mb-4">
     <li class="breadcrumb-item">
+        <a href="<?= base_url('main') ?>">Dashboard</a>
+    </li>
+
+    <li class="breadcrumb-item">
         <a href="<?= base_url('contadores') ?>">Contadores</a>
     </li>
-    <li class="breadcrumb-item active">Nuevo contador</li>
+
+    <li class="breadcrumb-item active">
+        Nuevo contador
+    </li>
 </ol>
 
 <?php if (session()->getFlashdata('errores')): ?>
@@ -52,33 +59,69 @@
 
             <div class="row g-3">
 
-                <div class="col-12">
+                <div class="col-12 col-md-6">
 
-                    <label for="servicio_id" class="form-label">
-                        Servicio
+                    <label for="numero_registro" class="form-label">
+                        Número de registro
+                    </label>
+
+                    <input
+                        type="text"
+                        name="numero_registro"
+                        id="numero_registro"
+                        class="form-control"
+                        maxlength="50"
+                        value="<?= esc(old('numero_registro')) ?>"
+                        required
+                    >
+
+                </div>
+
+                <div class="col-12 col-md-6">
+
+                    <label for="direccion_servicio" class="form-label">
+                        Dirección del servicio
+                    </label>
+
+                    <input
+                        type="text"
+                        name="direccion_servicio"
+                        id="direccion_servicio"
+                        class="form-control"
+                        maxlength="50"
+                        value="<?= esc(old('direccion_servicio')) ?>"
+                        required
+                    >
+
+                </div>
+
+                <div class="col-12 col-md-6">
+
+                    <label for="cliente_id" class="form-label">
+                        Cliente
                     </label>
 
                     <select
-                        name="servicio_id"
-                        id="servicio_id"
+                        name="cliente_id"
+                        id="cliente_id"
                         class="form-select"
-                        required>
+                        required
+                    >
 
                         <option value="">
-                            Seleccione un servicio
+                            Seleccione un cliente
                         </option>
 
-                        <?php foreach ($servicios as $servicio): ?>
+                        <?php foreach ($clientes as $cliente): ?>
 
                             <option
-                                value="<?= $servicio['id'] ?>"
-                                <?= old('servicio_id') == $servicio['id'] ? 'selected' : '' ?>>
+                                value="<?= $cliente['cliente_id'] ?>"
+                                <?= old('cliente_id') == $cliente['cliente_id']
+                                    ? 'selected'
+                                    : '' ?>
+                            >
 
-                                <?= esc($servicio['codigo']) ?>
-                                -
-                                <?= esc($servicio['cliente']) ?>
-                                -
-                                <?= esc($servicio['direccion'] ?? 'Sin dirección') ?>
+                                <?= esc($cliente['nombre']) ?>
 
                             </option>
 
@@ -90,51 +133,37 @@
 
                 <div class="col-12 col-md-6">
 
-                    <label for="numero_serie" class="form-label">
-                        Número de serie
+                    <label for="tipo_servicio_id" class="form-label">
+                        Tipo de servicio
                     </label>
 
-                    <input
-                        type="text"
-                        name="numero_serie"
-                        id="numero_serie"
-                        class="form-control"
-                        maxlength="40"
-                        value="<?= esc(old('numero_serie')) ?>">
+                    <select
+                        name="tipo_servicio_id"
+                        id="tipo_servicio_id"
+                        class="form-select"
+                        required
+                    >
 
-                </div>
+                        <option value="">
+                            Seleccione un tipo de servicio
+                        </option>
 
-                <div class="col-12 col-md-6">
+                        <?php foreach ($tiposServicio as $tipoServicio): ?>
 
-                    <label for="lectura_inicial" class="form-label">
-                        Lectura inicial
-                    </label>
+                            <option
+                                value="<?= $tipoServicio['tipo_servicio_id'] ?>"
+                                <?= old('tipo_servicio_id') == $tipoServicio['tipo_servicio_id']
+                                    ? 'selected'
+                                    : '' ?>
+                            >
 
-                    <input
-                        type="number"
-                        name="lectura_inicial"
-                        id="lectura_inicial"
-                        class="form-control"
-                        value="<?= esc(old('lectura_inicial', '0')) ?>"
-                        min="0"
-                        step="0.01"
-                        required>
+                                <?= esc($tipoServicio['tipo_servicio']) ?>
 
-                </div>
+                            </option>
 
-                <div class="col-12 col-md-6">
+                        <?php endforeach; ?>
 
-                    <label for="fecha_instalacion" class="form-label">
-                        Fecha de instalación
-                    </label>
-
-                    <input
-                        type="date"
-                        name="fecha_instalacion"
-                        id="fecha_instalacion"
-                        class="form-control"
-                        value="<?= esc(old('fecha_instalacion')) ?>"
-                        required>
+                    </select>
 
                 </div>
 
@@ -149,10 +178,9 @@
 
                 <a
                     href="<?= base_url('contadores') ?>"
-                    class="btn btn-secondary">
-
+                    class="btn btn-secondary"
+                >
                     Cancelar
-
                 </a>
 
             </div>
