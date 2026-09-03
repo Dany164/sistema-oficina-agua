@@ -6,21 +6,16 @@ use CodeIgniter\Model;
 
 class ContadorModel extends Model
 {
-    protected $table = 'contadores';
-    protected $primaryKey = 'id';
+    protected $table      = 'tb_contadores';
+    protected $primaryKey = 'contador_id';
 
     protected $returnType = 'array';
 
     protected $allowedFields = [
-        'servicio_id',
-        'numero_serie',
-        'lectura_inicial',
-        'fecha_instalacion',
-        'fecha_retiro',
-        'activo'
+        'numero_registro',
+        'direccion_servicio',
+        'estado',
+        'cliente_id',
+        'tipo_servicio_id'
     ];
-
-    protected $useTimestamps = true;
-    protected $createdField  = 'created_at';
-    protected $updatedField  = 'updated_at';
 }

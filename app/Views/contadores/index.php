@@ -5,7 +5,10 @@
 <h1 class="mt-4">Contadores</h1>
 
 <ol class="breadcrumb mb-4">
-    <li class="breadcrumb-item active">Gestión de contadores</li>
+    <li class="breadcrumb-item">
+        <a href="<?= base_url('main') ?>">Dashboard</a>
+    </li>
+    <li class="breadcrumb-item active">Contadores</li>
 </ol>
 
 <?php if (session()->getFlashdata('mensaje')): ?>
@@ -25,7 +28,7 @@
     <div class="card-header d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2">
 
         <div>
-            <i class="fas fa-gauge me-1"></i>
+            <i class="fas fa-gauge-high me-1"></i>
             Listado de contadores
         </div>
 
@@ -40,16 +43,15 @@
 
         <div class="table-responsive">
 
-            <table class="table table-bordered table-striped align-middle">
+            <table id="datatablesSimple" class="table table-bordered table-striped align-middle">
 
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Servicio</th>
-                        <th>Número de serie</th>
-                        <th>Lectura inicial</th>
-                        <th>Fecha de instalación</th>
-                        <th>Fecha de retiro</th>
+                        <th>Número de registro</th>
+                        <th>Cliente</th>
+                        <th>Tipo de servicio</th>
+                        <th>Dirección del servicio</th>
                         <th>Estado</th>
                         <th>Acciones</th>
                     </tr>
@@ -57,98 +59,111 @@
 
                 <tbody>
 
-                    <?php if (!empty($contadores)): ?>
+                    <?php foreach ($contadores as $contador): ?>
 
-                        <?php foreach ($contadores as $contador): ?>
+                        <tr>
 
-                            <tr>
+                            <td>
+                                <?= esc($contador['contador_id']) ?>
+                            </td>
 
-                                <td><?= $contador['id'] ?></td>
+                            <td>
+                                <?= esc($contador['numero_registro']) ?>
+                            </td>
 
-                                <td><?= $contador['servicio_id'] ?></td>
+                            <td>
+                                <?= esc($contador['cliente']) ?>
+                            </td>
 
-                                <td>
-                                    <?= esc($contador['numero_serie'] ?? 'Sin número') ?>
-                                </td>
+                            <td>
+                                <?= esc($contador['tipo_servicio']) ?>
+                            </td>
 
-                                <td>
-                                    <?= esc($contador['lectura_inicial']) ?>
-                                </td>
+                            <td>
+                                <?= esc($contador['direccion_servicio']) ?>
+                            </td>
 
-                                <td class="text-nowrap">
-                                    <?= esc($contador['fecha_instalacion']) ?>
-                                </td>
+                            <td>
 
-                                <td class="text-nowrap">
-                                    <?= esc($contador['fecha_retiro'] ?? '—') ?>
-                                </td>
+                                <?php if ($contador['estado']): ?>
 
-                                <td>
+                                    <span class="badge bg-success">
+                                        Activo
+                                    </span>
 
-                                    <?php if ($contador['activo']): ?>
+                                <?php else: ?>
 
-                                        <span class="badge bg-success">
-                                            Activo
-                                        </span>
+                                    <span class="badge bg-secondary">
+                                        Retirado
+                                    </span>
+
+                                <?php endif; ?>
+
+                            </td>
+
+                            <td>
+
+                                <div class="d-flex gap-2">
+
+                                    <a
+                                        href="<?= base_url(
+                                            'contadores/editar/' .
+                                            $contador['contador_id']
+                                        ) ?>"
+                                        class="btn btn-warning btn-sm">
+
+                                        <i class="fas fa-pen me-1"></i>
+                                        Editar
+
+                                    </a>
+
+                                    <?php if ($contador['estado']): ?>
+
+                                        <form
+                                            action="<?= base_url(
+                                                'contadores/retirar/' .
+                                                $contador['contador_id']
+                                            ) ?>"
+                                            method="post"
+                                            onsubmit="return confirm('¿Está seguro de que desea retirar este contador?');">
+
+                                            <?= csrf_field() ?>
+
+                                            <button type="submit" class="btn btn-danger btn-sm">
+                                                <i class="fas fa-ban me-1"></i>
+                                                Retirar
+                                            </button>
+
+                                        </form>
 
                                     <?php else: ?>
 
-                                        <span class="badge bg-secondary">
-                                            Retirado
-                                        </span>
+                                        <form
+                                            action="<?= base_url(
+                                                'contadores/reactivar/' .
+                                                $contador['contador_id']
+                                            ) ?>"
+                                            method="post"
+                                            onsubmit="return confirm('¿Está seguro de que desea reactivar este contador?');">
+
+                                            <?= csrf_field() ?>
+
+                                            <button type="submit" class="btn btn-success btn-sm">
+                                                <i class="fas fa-rotate-left me-1"></i>
+                                                Reactivar
+                                            </button>
+
+                                        </form>
 
                                     <?php endif; ?>
 
-                                </td>
+                                </div>
 
-                                <td>
-
-                                    <div class="d-flex gap-2">
-
-                                        <a
-                                            href="<?= base_url('contadores/editar/' . $contador['id']) ?>"
-                                            class="btn btn-warning btn-sm">
-
-                                            <i class="fas fa-pen me-1"></i>
-                                            Editar
-
-                                        </a>
-
-                                        <?php if ($contador['activo']): ?>
-
-                                            <form
-                                                action="<?= base_url('contadores/retirar/' . $contador['id']) ?>"
-                                                method="post"
-                                                onsubmit="return confirm('¿Seguro que desea retirar este contador? El contador quedará registrado como retirado en el historial.');">
-
-                                                <?= csrf_field() ?>
-
-                                                <button type="submit" class="btn btn-danger btn-sm">
-                                                    <i class="fas fa-ban me-1"></i>
-                                                    Retirar
-                                                </button>
-
-                                            </form>
-
-                                        <?php endif; ?>
-
-                                    </div>
-
-                                </td>
-
-                            </tr>
-
-                        <?php endforeach; ?>
-
-                    <?php else: ?>
-
-                        <tr>
-                            <td colspan="8" class="text-center py-4">
-                                No hay contadores registrados.
                             </td>
+
                         </tr>
 
-                    <?php endif; ?>
+                    <?php endforeach; ?>
 
                 </tbody>
 
@@ -159,5 +174,11 @@
     </div>
 
 </div>
+
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+
+<script src="<?= base_url('assets/js/datatables-simple-demo.js') ?>"></script>
 
 <?= $this->endSection() ?>

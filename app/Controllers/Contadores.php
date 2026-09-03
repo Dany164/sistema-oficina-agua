@@ -15,24 +15,42 @@ class Contadores extends BaseController
 
     public function index()
     {
-        $data['contadores'] = $this->contadorModel->findAll();
+        $db = db_connect();
+
+        $data['contadores'] = $db->table('tb_contadores c')
+            ->select('
+                c.contador_id,
+                c.numero_registro,
+                c.direccion_servicio,
+                c.estado,
+                c.cliente_id,
+                c.tipo_servicio_id,
+                cl.nombre AS cliente,
+                ts.tipo_servicio
+            ')
+            ->join('tb_clientes cl', 'cl.cliente_id = c.cliente_id')
+            ->join(
+                'tb_tipos_servicio ts',
+                'ts.tipo_servicio_id = c.tipo_servicio_id'
+            )
+            ->orderBy('c.contador_id', 'DESC')
+            ->get()
+            ->getResultArray();
 
         return view('contadores/index', $data);
     }
 
     public function crear()
     {
-
-        // TODO: Reemplazar esta consulta directa cuando exista ServicioModel.
-        // Actualmente se usa para obtener los servicios necesarios en el CRUD de contadores.
-
         $db = db_connect();
 
-        $data['servicios'] = $db->table('servicios')
-            ->select('servicios.id, servicios.codigo, servicios.direccion, clientes.nombre AS cliente')
-            ->join('clientes', 'clientes.id = servicios.cliente_id')
-            ->where('servicios.estado', 'activo')
-            ->orderBy('servicios.codigo', 'ASC')
+        $data['clientes'] = $db->table('tb_clientes')
+            ->orderBy('nombre', 'ASC')
+            ->get()
+            ->getResultArray();
+
+        $data['tiposServicio'] = $db->table('tb_tipos_servicio')
+            ->orderBy('tipo_servicio', 'ASC')
             ->get()
             ->getResultArray();
 
@@ -42,10 +60,38 @@ class Contadores extends BaseController
     public function guardar()
     {
         $reglas = [
-            'servicio_id' => 'required|integer',
-            'numero_serie' => 'permit_empty|max_length[40]|is_unique[contadores.numero_serie]',
-            'lectura_inicial' => 'required|decimal|greater_than_equal_to[0]',
-            'fecha_instalacion' => 'required|valid_date[Y-m-d]'
+            'numero_registro' => [
+                'rules' => 'required|max_length[50]|is_unique[tb_contadores.numero_registro]',
+                'errors' => [
+                    'required' => 'El número de registro es obligatorio.',
+                    'max_length' => 'El número de registro no puede superar los 50 caracteres.',
+                    'is_unique' => 'Ese número de registro ya existe.',
+                ],
+            ],
+
+            'direccion_servicio' => [
+                'rules' => 'required|max_length[50]',
+                'errors' => [
+                    'required' => 'La dirección del servicio es obligatoria.',
+                    'max_length' => 'La dirección no puede superar los 50 caracteres.',
+                ],
+            ],
+
+            'cliente_id' => [
+                'rules' => 'required|integer|is_not_unique[tb_clientes.cliente_id]',
+                'errors' => [
+                    'required' => 'Debe seleccionar un cliente.',
+                    'is_not_unique' => 'El cliente seleccionado no existe.',
+                ],
+            ],
+
+            'tipo_servicio_id' => [
+                'rules' => 'required|integer|is_not_unique[tb_tipos_servicio.tipo_servicio_id]',
+                'errors' => [
+                    'required' => 'Debe seleccionar un tipo de servicio.',
+                    'is_not_unique' => 'El tipo de servicio seleccionado no existe.',
+                ],
+            ],
         ];
 
         if (!$this->validate($reglas)) {
@@ -55,51 +101,17 @@ class Contadores extends BaseController
                 ->with('errores', $this->validator->getErrors());
         }
 
-        $servicioId = $this->request->getPost('servicio_id');
-        $fechaInstalacion = $this->request->getPost('fecha_instalacion');
-
-        $numeroSerie = trim((string) $this->request->getPost('numero_serie'));
-
-        if ($numeroSerie === '') {
-            $numeroSerie = null;
-        }
-
-        $db = db_connect();
-
-        $db->transStart();
-
-        // Buscar si el servicio ya tiene un contador activo.
-        $contadorAnterior = $this->contadorModel
-            ->where('servicio_id', $servicioId)
-            ->where('activo', 1)
-            ->first();
-
-        // Si existe, se retira antes de instalar el nuevo.
-        if ($contadorAnterior) {
-            $this->contadorModel->update($contadorAnterior['id'], [
-                'activo'       => 0,
-                'fecha_retiro' => $fechaInstalacion
-            ]);
-        }
-
-        // Registrar el nuevo contador.
         $this->contadorModel->insert([
-            'servicio_id'       => $servicioId,
-            'numero_serie'      => $numeroSerie,
-            'lectura_inicial'   => $this->request->getPost('lectura_inicial'),
-            'fecha_instalacion' => $fechaInstalacion,
-            'fecha_retiro'      => null,
-            'activo'            => 1
+            'numero_registro' => trim(
+                (string) $this->request->getPost('numero_registro')
+            ),
+            'direccion_servicio' => trim(
+                (string) $this->request->getPost('direccion_servicio')
+            ),
+            'cliente_id' => $this->request->getPost('cliente_id'),
+            'tipo_servicio_id' => $this->request->getPost('tipo_servicio_id'),
+            'estado' => 1,
         ]);
-
-        $db->transComplete();
-
-        if ($db->transStatus() === false) {
-            return redirect()
-                ->back()
-                ->withInput()
-                ->with('error', 'No fue posible registrar el contador.');
-        }
 
         return redirect()
             ->to(base_url('contadores'))
@@ -112,25 +124,26 @@ class Contadores extends BaseController
 
         if (!$contador) {
             throw new \CodeIgniter\Exceptions\PageNotFoundException(
-                'Contador no encontrado'
+                'Contador no encontrado.'
             );
         }
 
-        // TODO: Reemplazar esta consulta directa cuando exista ServicioModel.
-        // Actualmente se usa para obtener los servicios necesarios en el CRUD de contadores.
-
         $db = db_connect();
 
-        $servicios = $db->table('servicios')
-            ->select('servicios.id, servicios.codigo, servicios.direccion, clientes.nombre AS cliente')
-            ->join('clientes', 'clientes.id = servicios.cliente_id')
-            ->orderBy('servicios.codigo', 'ASC')
+        $clientes = $db->table('tb_clientes')
+            ->orderBy('nombre', 'ASC')
+            ->get()
+            ->getResultArray();
+
+        $tiposServicio = $db->table('tb_tipos_servicio')
+            ->orderBy('tipo_servicio', 'ASC')
             ->get()
             ->getResultArray();
 
         return view('contadores/editar', [
-            'contador'  => $contador,
-            'servicios' => $servicios
+            'contador' => $contador,
+            'clientes' => $clientes,
+            'tiposServicio' => $tiposServicio,
         ]);
     }
 
@@ -140,15 +153,15 @@ class Contadores extends BaseController
 
         if (!$contador) {
             throw new \CodeIgniter\Exceptions\PageNotFoundException(
-                'Contador no encontrado'
+                'Contador no encontrado.'
             );
         }
 
         $reglas = [
-            'servicio_id'       => 'required|integer',
-            'numero_serie'      => 'permit_empty|max_length[40]',
-            'lectura_inicial'   => 'required|decimal|greater_than_equal_to[0]',
-            'fecha_instalacion' => 'required|valid_date[Y-m-d]'
+            'numero_registro' => 'required|max_length[50]',
+            'direccion_servicio' => 'required|max_length[50]',
+            'cliente_id' => 'required|integer|is_not_unique[tb_clientes.cliente_id]',
+            'tipo_servicio_id' => 'required|integer|is_not_unique[tb_tipos_servicio.tipo_servicio_id]',
         ];
 
         if (!$this->validate($reglas)) {
@@ -158,32 +171,32 @@ class Contadores extends BaseController
                 ->with('errores', $this->validator->getErrors());
         }
 
-        $numeroSerie = trim((string) $this->request->getPost('numero_serie'));
+        $numeroRegistro = trim(
+            (string) $this->request->getPost('numero_registro')
+        );
 
-        if ($numeroSerie === '') {
-            $numeroSerie = null;
-        }
+        $registroExistente = $this->contadorModel
+            ->where('numero_registro', $numeroRegistro)
+            ->where('contador_id !=', $id)
+            ->first();
 
-        // Comprobar que el número de serie no pertenezca a otro contador.
-        if ($numeroSerie !== null) {
-            $serieExistente = $this->contadorModel
-                ->where('numero_serie', $numeroSerie)
-                ->where('id !=', $id)
-                ->first();
-
-            if ($serieExistente) {
-                return redirect()
-                    ->back()
-                    ->withInput()
-                    ->with('error', 'El número de serie ya está registrado.');
-            }
+        if ($registroExistente) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with(
+                    'error',
+                    'El número de registro ya pertenece a otro contador.'
+                );
         }
 
         $this->contadorModel->update($id, [
-            'servicio_id'       => $this->request->getPost('servicio_id'),
-            'numero_serie'      => $numeroSerie,
-            'lectura_inicial'   => $this->request->getPost('lectura_inicial'),
-            'fecha_instalacion' => $this->request->getPost('fecha_instalacion')
+            'numero_registro' => $numeroRegistro,
+            'direccion_servicio' => trim(
+                (string) $this->request->getPost('direccion_servicio')
+            ),
+            'cliente_id' => $this->request->getPost('cliente_id'),
+            'tipo_servicio_id' => $this->request->getPost('tipo_servicio_id'),
         ]);
 
         return redirect()
@@ -197,27 +210,18 @@ class Contadores extends BaseController
 
         if (!$contador) {
             throw new \CodeIgniter\Exceptions\PageNotFoundException(
-                'Contador no encontrado'
+                'Contador no encontrado.'
             );
         }
 
-        if (!$contador['activo']) {
+        if (!$contador['estado']) {
             return redirect()
                 ->to(base_url('contadores'))
                 ->with('error', 'El contador ya está retirado.');
         }
 
-        $fechaRetiro = date('Y-m-d');
-
-        if ($fechaRetiro < $contador['fecha_instalacion']) {
-            return redirect()
-                ->to(base_url('contadores'))
-                ->with('error', 'La fecha de retiro no puede ser anterior a la fecha de instalación.');
-        }
-
         $this->contadorModel->update($id, [
-            'activo'       => 0,
-            'fecha_retiro' => $fechaRetiro
+            'estado' => 0,
         ]);
 
         return redirect()
@@ -225,5 +229,28 @@ class Contadores extends BaseController
             ->with('mensaje', 'Contador retirado correctamente.');
     }
 
+    public function reactivar($id)
+    {
+        $contador = $this->contadorModel->find($id);
 
+        if (!$contador) {
+            throw new \CodeIgniter\Exceptions\PageNotFoundException(
+                'Contador no encontrado.'
+            );
+        }
+
+        if ($contador['estado']) {
+            return redirect()
+                ->to(base_url('contadores'))
+                ->with('error', 'El contador ya se encuentra activo.');
+        }
+
+        $this->contadorModel->update($id, [
+            'estado' => 1,
+        ]);
+
+        return redirect()
+            ->to(base_url('contadores'))
+            ->with('mensaje', 'Contador reactivado correctamente.');
+    }
 }
