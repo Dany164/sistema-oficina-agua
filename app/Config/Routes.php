@@ -38,9 +38,13 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->get('/', 'Lecturas::index');
         $routes->get('new', 'Lecturas::new');
         $routes->post('create', 'Lecturas::create');
+
+        // Corrección de lecturas: solo Administrador
+        $routes->get('corregir/(:num)', 'Lecturas::corregir/$1');
+        $routes->post('corregir/(:num)', 'Lecturas::actualizar/$1');
+
         $routes->get('recibo/(:num)', 'Lecturas::recibo/$1');
     });
-
 
 
     // Rutas de Clientes =========================================================================

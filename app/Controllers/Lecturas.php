@@ -40,6 +40,7 @@ class Lecturas extends BaseController
                 'cl.nombre AS cliente',
                 'ts.tipo_servicio',
                 'u.nombre AS lector',
+                'p.pago_id',
             ])
             ->join(
                 'Tb_Contadores c',
@@ -57,13 +58,28 @@ class Lecturas extends BaseController
                 'Tb_Usuarios u',
                 'u.usuario_id = l.usuario_lector_id'
             )
+            ->join(
+                'Tb_Pagos p',
+                'p.lectura_id = l.lectura_id',
+                'left'
+            )
             ->orderBy('l.fecha', 'DESC')
             ->orderBy('l.lectura_id', 'DESC')
             ->get()
             ->getResultArray();
 
+        $ultimasLecturas = [];
+
+        foreach ($lecturas as $lectura) {
+            if (! isset($ultimasLecturas[$lectura['contador_id']])) {
+                $ultimasLecturas[$lectura['contador_id']] = $lectura['lectura_id'];
+            }
+        }
+
         return view('lecturas/index', [
-            'lecturas' => $lecturas,
+            'title'           => 'Lecturas',
+            'lecturas'        => $lecturas,
+            'ultimasLecturas' => $ultimasLecturas,
         ]);
     }
 
@@ -75,6 +91,7 @@ class Lecturas extends BaseController
         $contadores = $this->obtenerContadoresActivos();
 
         return view('lecturas/form', [
+            'title'      => 'Nueva lectura',
             'contadores' => $contadores,
         ]);
     }
@@ -399,9 +416,277 @@ class Lecturas extends BaseController
         return redirect()
             ->to(base_url('lecturas'))
             ->with(
-                'mensaje',
+                'success',
                 'Lectura registrada correctamente.'
             );
+    }
+
+    public function corregir($id)
+    {
+        // Solo Administrador
+        if (strtolower(trim((string) session()->get('rol_nombre'))) !== 'administrador') {
+            return redirect()->to(base_url('lecturas'))
+                ->with('error', 'No tienes permisos para corregir lecturas.');
+        }
+
+        $db = db_connect();
+
+        // Obtener la lectura
+        $lectura = $db->table('Tb_Lecturas l')
+            ->select('
+            l.*,
+            c.numero_registro,
+            cl.nombre AS cliente,
+            ts.tipo_servicio,
+            u.nombre AS lector,
+            p.pago_id
+        ')
+            ->join('Tb_Contadores c', 'c.contador_id = l.contador_id')
+            ->join('Tb_Clientes cl', 'cl.cliente_id = c.cliente_id')
+            ->join('Tb_Tipos_Servicio ts', 'ts.tipo_servicio_id = c.tipo_servicio_id')
+            ->join('Tb_Usuarios u', 'u.usuario_id = l.usuario_lector_id')
+            ->join('Tb_Pagos p', 'p.lectura_id = l.lectura_id', 'left')
+            ->where('l.lectura_id', $id)
+            ->get()
+            ->getRowArray();
+
+        if (! $lectura) {
+            return redirect()->to(base_url('lecturas'))
+                ->with('error', 'La lectura no existe.');
+        }
+
+        // No se puede corregir una lectura que ya tiene pago
+        if (! empty($lectura['pago_id'])) {
+            return redirect()->to(base_url('lecturas'))
+                ->with('error', 'No se puede corregir una lectura que ya tiene un pago asociado.');
+        }
+
+        // Verificar que sea la última lectura del contador
+        $ultimaLectura = $db->table('Tb_Lecturas')
+            ->select('lectura_id')
+            ->where('contador_id', $lectura['contador_id'])
+            ->orderBy('fecha', 'DESC')
+            ->orderBy('lectura_id', 'DESC')
+            ->get()
+            ->getRowArray();
+
+        if (! $ultimaLectura || (int) $ultimaLectura['lectura_id'] !== (int) $id) {
+            return redirect()->to(base_url('lecturas'))
+                ->with('error', 'Solo se puede corregir la última lectura registrada del contador.');
+        }
+
+        return view('lecturas/corregir', [
+            'title'   => 'Corregir lectura',
+            'lectura' => $lectura,
+        ]);
+    }
+
+    public function actualizar($id)
+    {
+        // Solo Administrador
+        if (strtolower(trim((string) session()->get('rol_nombre'))) !== 'administrador') {
+            return redirect()->to(base_url('lecturas'))
+                ->with('error', 'No tienes permisos para corregir lecturas.');
+        }
+
+        $db = db_connect();
+
+        // Buscar lectura
+        $lectura = $db->table('Tb_Lecturas')
+            ->where('lectura_id', $id)
+            ->get()
+            ->getRowArray();
+
+        if (! $lectura) {
+            return redirect()->to(base_url('lecturas'))
+                ->with('error', 'La lectura no existe.');
+        }
+
+        // Verificar pago
+        $pago = $db->table('Tb_Pagos')
+            ->where('lectura_id', $id)
+            ->get()
+            ->getRowArray();
+
+        if ($pago) {
+            return redirect()->to(base_url('lecturas'))
+                ->with('error', 'No se puede corregir una lectura que ya tiene un pago asociado.');
+        }
+
+        // Verificar que sea la última lectura
+        $ultimaLectura = $db->table('Tb_Lecturas')
+            ->select('lectura_id')
+            ->where('contador_id', $lectura['contador_id'])
+            ->orderBy('fecha', 'DESC')
+            ->orderBy('lectura_id', 'DESC')
+            ->get()
+            ->getRowArray();
+
+        if (! $ultimaLectura || (int) $ultimaLectura['lectura_id'] !== (int) $id) {
+            return redirect()->to(base_url('lecturas'))
+                ->with('error', 'Solo se puede corregir la última lectura del contador.');
+        }
+
+        // Validar nueva lectura
+        $lecturaActual = $this->request->getPost('lectura_actual');
+
+        if ($lecturaActual === null || $lecturaActual === '' || ! ctype_digit((string) $lecturaActual)) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'La nueva lectura debe ser un número entero válido.');
+        }
+
+        $lecturaActual = (int) $lecturaActual;
+
+        if ($lecturaActual < (int) $lectura['lectura_anterior']) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'La lectura actual no puede ser menor que la lectura anterior.');
+        }
+
+        /*
+     * La lectura anterior NO cambia.
+     * Solo estamos corrigiendo la lectura actual.
+     */
+        $lecturaAnterior = (int) $lectura['lectura_anterior'];
+
+        $consumo = $lecturaActual - $lecturaAnterior;
+
+        /*
+     * Obtener contador y tipo de servicio
+     */
+        $contador = $db->table('Tb_Contadores c')
+            ->select('
+            c.contador_id,
+            c.tipo_servicio_id,
+            ts.litros_incluidos
+        ')
+            ->join(
+                'Tb_Tipos_Servicio ts',
+                'ts.tipo_servicio_id = c.tipo_servicio_id'
+            )
+            ->where('c.contador_id', $lectura['contador_id'])
+            ->get()
+            ->getRowArray();
+
+        if (! $contador) {
+            return redirect()->back()
+                ->with('error', 'No se encontró la información del contador.');
+        }
+
+        /*
+     * Buscar tarifa base vigente en la fecha de la lectura
+     */
+        $tarifaBase = $db->table('Tb_Tarifas')
+            ->where('tipo_servicio_id', $contador['tipo_servicio_id'])
+            ->where('vigente_desde <=', $lectura['fecha'])
+            ->groupStart()
+            ->where('vigente_hasta >=', $lectura['fecha'])
+            ->orWhere('vigente_hasta IS NULL', null, false)
+            ->groupEnd()
+            ->orderBy('vigente_desde', 'DESC')
+            ->get()
+            ->getRowArray();
+
+        if (! $tarifaBase) {
+            return redirect()->back()
+                ->with('error', 'No existe una tarifa base vigente para la fecha de la lectura.');
+        }
+
+        $montoBase = (float) $tarifaBase['monto_por_unidad'];
+
+        $litrosExceso = null;
+        $montoExceso = null;
+        $tarifaExcesoId = null;
+
+        /*
+     * Calcular exceso
+     */
+        if (
+            $contador['litros_incluidos'] !== null &&
+            $consumo > (int) $contador['litros_incluidos']
+        ) {
+            $litrosExceso = $consumo - (int) $contador['litros_incluidos'];
+
+            // Buscar tipo de servicio "Exceso"
+            $tipoExceso = $db->table('Tb_Tipos_Servicio')
+                ->where('tipo_servicio', 'Exceso')
+                ->get()
+                ->getRowArray();
+
+            if (! $tipoExceso) {
+                return redirect()->back()
+                    ->with('error', 'No existe el tipo de servicio Exceso.');
+            }
+
+            // Buscar tarifa de exceso vigente
+            $tarifaExceso = $db->table('Tb_Tarifas')
+                ->where('tipo_servicio_id', $tipoExceso['tipo_servicio_id'])
+                ->where('vigente_desde <=', $lectura['fecha'])
+                ->groupStart()
+                ->where('vigente_hasta >=', $lectura['fecha'])
+                ->orWhere('vigente_hasta IS NULL', null, false)
+                ->groupEnd()
+                ->orderBy('vigente_desde', 'DESC')
+                ->get()
+                ->getRowArray();
+
+            if (! $tarifaExceso) {
+                return redirect()->back()
+                    ->with('error', 'No existe una tarifa de exceso vigente para la fecha de la lectura.');
+            }
+
+            $tarifaExcesoId = $tarifaExceso['tarifa_id'];
+
+            $unidadesExceso = (int) ceil($litrosExceso / 1000);
+
+            $montoExceso = $unidadesExceso * (float) $tarifaExceso['monto_por_unidad'];
+        }
+
+        $montoTotal = $montoBase + ($montoExceso ?? 0);
+
+        /*
+     * Usuario que realiza la corrección
+     */
+        $usuarioAdminId = session()->get('usuario_id');
+
+        if (! $usuarioAdminId) {
+            return redirect()->to(base_url('lecturas'))
+                ->with('error', 'No se pudo identificar al usuario que realiza la corrección.');
+        }
+
+        /*
+     * Auditoría:
+     * el trigger utilizará @usuario_actual
+     */
+        $db->transStart();
+
+        $db->query(
+            'SET @usuario_actual = ?',
+            [$usuarioAdminId]
+        );
+
+        $this->lecturaModel->update($id, [
+            'lectura_actual'  => $lecturaActual,
+            'consumo_litros'  => $consumo,
+            'litros_exceso'   => $litrosExceso,
+            'monto_base'      => $montoBase,
+            'monto_exceso'    => $montoExceso,
+            'monto_total'     => $montoTotal,
+            'tarifa_base_id'  => $tarifaBase['tarifa_id'],
+            'tarifa_exceso_id' => $tarifaExcesoId,
+        ]);
+
+        $db->transComplete();
+
+        if ($db->transStatus() === false) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'No fue posible guardar la corrección.');
+        }
+
+        return redirect()->to(base_url('lecturas'))
+            ->with('success', 'La lectura fue corregida correctamente.');
     }
 
     public function recibo($id)
@@ -428,7 +713,8 @@ class Lecturas extends BaseController
             ->getRowArray();
 
         if (!$lectura) {
-            return redirect()->to('/lecturas')
+            return redirect()
+                ->to(base_url('lecturas'))
                 ->with('error', 'La lectura solicitada no existe.');
         }
 

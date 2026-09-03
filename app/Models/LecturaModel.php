@@ -6,13 +6,13 @@ use CodeIgniter\Model;
 
 class LecturaModel extends Model
 {
-    protected $table = 'Tb_lecturas';
+    protected $table = 'Tb_Lecturas';
     protected $primaryKey = 'lectura_id';
 
     protected $useAutoIncrement = true;
     protected $returnType = 'array';
 
-    protected $protectedFields = true;
+    protected $protectFields = true;
 
 
 
