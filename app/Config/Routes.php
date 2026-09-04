@@ -13,19 +13,21 @@ $routes->get('logout', 'Auth::logout');
 $routes->group('', ['filter' => 'auth'], function ($routes) {
 
     // Rutas de Contadores =========================================================================
-    $routes->get('contadores', 'Contadores::index');
-    $routes->get('contadores/crear', 'Contadores::crear');
-    $routes->post('contadores/guardar', 'Contadores::guardar');
-    $routes->get('contadores/editar/(:num)', 'Contadores::editar/$1');
-    $routes->post('contadores/actualizar/(:num)', 'Contadores::actualizar/$1');
-    $routes->post('contadores/retirar/(:num)', 'Contadores::retirar/$1');
-    $routes->post('contadores/reactivar/(:num)', 'Contadores::reactivar/$1');
+    $routes->group('contadores', ['filter' => 'role:administrador'], static function ($routes) {
+        $routes->get('/', 'Contadores::index');
+        $routes->get('crear', 'Contadores::crear');
+        $routes->post('guardar', 'Contadores::guardar');
+        $routes->get('editar/(:num)', 'Contadores::editar/$1');
+        $routes->post('actualizar/(:num)', 'Contadores::actualizar/$1');
+        $routes->post('retirar/(:num)', 'Contadores::retirar/$1');
+        $routes->post('reactivar/(:num)', 'Contadores::reactivar/$1');
+    });
 
     // Rutas de main =========================================================================
     $routes->get('/main', 'Main::index');
 
     // Rutas de Tarifas =========================================================================
-    $routes->group('tarifas', static function ($routes) {
+    $routes->group('tarifas', ['filter' => 'role:administrador'], static function ($routes) {
         $routes->get('/', 'Tarifas::index');
         $routes->get('new', 'Tarifas::new');
         $routes->post('create', 'Tarifas::create');
@@ -48,7 +50,7 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
 
 
     // Rutas de Clientes =========================================================================
-    $routes->group('clientes', static function ($routes) {
+    $routes->group('clientes', ['filter' => 'role:administrador,secretaria'], static function ($routes) {
         $routes->get('/', 'Clientes::index');
         $routes->get('new', 'Clientes::new');
         $routes->post('create', 'Clientes::create');
@@ -58,12 +60,23 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
     });
 
     // Rutas de Servicios =========================================================================
-    $routes->group('servicios', static function ($routes) {
+    $routes->group('servicios', ['filter' => 'role:administrador'], static function ($routes) {
         $routes->get('/', 'Servicios::index');
         $routes->get('new', 'Servicios::new');
         $routes->post('create', 'Servicios::create');
         $routes->get('edit/(:num)', 'Servicios::edit/$1');
         $routes->post('update/(:num)', 'Servicios::update/$1');
         $routes->post('delete/(:num)', 'Servicios::delete/$1');
+    });
+
+    // Rutas de Pagos =========================================================================
+    $routes->group('pagos', ['filter' => 'role:administrador,secretaria'], static function ($routes) {
+        $routes->get('/', 'Pagos::index');
+        $routes->get('new', 'Pagos::new');
+        $routes->post('create', 'Pagos::create');
+        $routes->get('edit/(:num)', 'Pagos::edit/$1');
+        $routes->post('update/(:num)', 'Pagos::update/$1');
+        $routes->post('annul/(:num)', 'Pagos::annul/$1');
+        $routes->get('receipt/(:num)', 'Pagos::receipt/$1');
     });
 });

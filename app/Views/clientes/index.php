@@ -28,7 +28,7 @@
                     <tr>
                         <th>Nombre</th>
                         <th>Teléfono</th>
-                        <th>Estado</th>
+                        <th>Dirección</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -37,16 +37,10 @@
                         <tr>
                             <td><?= esc($cliente['nombre']) ?></td>
                             <td><?= esc($cliente['telefono'] ?: 'Sin teléfono') ?></td>
+                            <td><?= esc($cliente['direccion']) ?></td>
                             <td>
-                                <?php if ($cliente['activo']): ?>
-                                    <span class="badge bg-success">Activo</span>
-                                <?php else: ?>
-                                    <span class="badge bg-secondary">Inactivo</span>
-                                <?php endif; ?>
-                            </td>
-                            <td>
-                                <a href="<?= base_url('clientes/edit/' . $cliente['id']) ?>" class="btn btn-warning btn-sm">Editar</a>
-                                <form action="<?= base_url('clientes/delete/' . $cliente['id']) ?>" method="post" class="d-inline">
+                                <a href="<?= base_url('clientes/edit/' . $cliente['cliente_id']) ?>" class="btn btn-warning btn-sm">Editar</a>
+                                <form action="<?= base_url('clientes/delete/' . $cliente['cliente_id']) ?>" method="post" class="d-inline">
                                     <?= csrf_field() ?>
                                     <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Deseas eliminar este cliente?')">
                                         Eliminar
