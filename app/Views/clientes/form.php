@@ -2,10 +2,10 @@
 
 <?= $this->section('content') ?>
 
-    <h1 class="mt-4"><?= isset($cliente['id']) ? 'Editar cliente' : 'Nuevo cliente' ?></h1>
+    <h1 class="mt-4"><?= isset($cliente['cliente_id']) ? 'Editar cliente' : 'Nuevo cliente' ?></h1>
     <ol class="breadcrumb mb-4">
         <li class="breadcrumb-item"><a href="<?= base_url('clientes') ?>">Clientes</a></li>
-        <li class="breadcrumb-item active"><?= isset($cliente['id']) ? 'Editar' : 'Crear' ?></li>
+        <li class="breadcrumb-item active"><?= isset($cliente['cliente_id']) ? 'Editar' : 'Crear' ?></li>
     </ol>
 
     <?php if (!empty($errors)): ?>
@@ -19,13 +19,13 @@
     <?php endif; ?>
 
     <?php
-        $action = isset($cliente['id'])
-            ? base_url('clientes/update/' . $cliente['id'])
+        $action = isset($cliente['cliente_id'])
+            ? base_url('clientes/update/' . $cliente['cliente_id'])
             : base_url('clientes/create');
 
         $nombre = old('nombre', $cliente['nombre'] ?? '');
         $telefono = old('telefono', $cliente['telefono'] ?? '');
-        $activo = old('activo', $cliente['activo'] ?? 1);
+        $direccion = old('direccion', $cliente['direccion'] ?? '');
     ?>
 
     <div class="card mb-4">
@@ -45,24 +45,14 @@
                     </div>
                 </div>
 
-                <div class="mt-4 d-flex gap-2">
-                    <input type="hidden" name="activo" value="0">
-                    <div class="form-check">
-                        <input
-                            type="checkbox"
-                            class="form-check-input"
-                            id="activo"
-                            name="activo"
-                            value="1"
-                            <?= (string) $activo === '1' ? 'checked' : '' ?>
-                        >
-                        <label class="form-check-label" for="activo">Cliente activo</label>
-                    </div>
+                <div class="mt-3">
+                    <label for="direccion" class="form-label">Dirección</label>
+                    <textarea class="form-control" id="direccion" name="direccion" rows="3" maxlength="255" required><?= esc($direccion) ?></textarea>
                 </div>
 
                 <div class="mt-4 d-flex gap-2">
                     <button type="submit" class="btn btn-primary">
-                        <?= isset($cliente['id']) ? 'Actualizar cliente' : 'Guardar cliente' ?>
+                        <?= isset($cliente['cliente_id']) ? 'Actualizar cliente' : 'Guardar cliente' ?>
                     </button>
                     <a href="<?= base_url('clientes') ?>" class="btn btn-secondary">Cancelar</a>
                 </div>

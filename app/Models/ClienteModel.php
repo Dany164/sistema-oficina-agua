@@ -6,8 +6,8 @@ use CodeIgniter\Model;
 
 class ClienteModel extends Model
 {
-    protected $table            = 'clientes';
-    protected $primaryKey       = 'id';
+    protected $table            = 'Tb_Clientes';
+    protected $primaryKey       = 'cliente_id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
@@ -15,31 +15,29 @@ class ClienteModel extends Model
     protected $allowedFields    = [
         'nombre',
         'telefono',
-        'activo',
+        'direccion',
     ];
 
-    protected $useTimestamps = true;
-    protected $dateFormat    = 'datetime';
-    protected $createdField  = 'created_at';
-    protected $updatedField  = 'updated_at';
+    protected $useTimestamps = false;
 
     protected $validationRules = [
-        'nombre' => 'required|max_length[150]|trim',
+        'nombre' => 'required|max_length[100]|trim',
         'telefono' => 'permit_empty|max_length[20]|regex_match[/^(\+502\s?)?[0-9\s\-\(\)]{8,20}$/]',
-        'activo' => 'required|in_list[0,1]',
+        'direccion' => 'required|max_length[255]|trim',
     ];
 
     protected $validationMessages = [
         'nombre' => [
             'required' => 'El nombre del cliente es obligatorio.',
-            'max_length' => 'El nombre no puede superar los 150 caracteres.',
+            'max_length' => 'El nombre no puede superar los 100 caracteres.',
         ],
         'telefono' => [
             'regex_match' => 'El teléfono no es válido. Ejemplo: 4545-6789 o +502 4545-6789.',
             'max_length' => 'El teléfono es demasiado largo.',
         ],
-        'activo' => [
-            'in_list' => 'El estado del cliente debe ser activo o inactivo.',
+        'direccion' => [
+            'required' => 'La dirección del cliente es obligatoria.',
+            'max_length' => 'La dirección no puede superar los 255 caracteres.',
         ],
     ];
 

@@ -30,7 +30,7 @@ class Clientes extends BaseController
             'cliente' => [
                 'nombre' => '',
                 'telefono' => '',
-                'activo' => 1,
+                'direccion' => '',
             ],
             'errors' => [],
         ];
@@ -42,26 +42,24 @@ class Clientes extends BaseController
     {
         $data = $this->request->getPost();
 
-        if (empty($data['activo'])) {
-            $data['activo'] = 0;
-        } else {
-            $data['activo'] = 1;
-        }
-
         $data['telefono'] = $this->clienteModel->normalizeTelefono($data['telefono'] ?? '');
 
         if (!$this->validate([
-            'nombre' => 'required|max_length[150]|trim',
+            'nombre' => 'required|max_length[100]|trim',
             'telefono' => 'permit_empty|max_length[20]|regex_match[/^(\+502\s?)?[0-9\s\-\(\)]{8,20}$/]',
-            'activo' => 'required|in_list[0,1]',
+            'direccion' => 'required|max_length[255]|trim',
         ], [
             'nombre' => [
                 'required' => 'El nombre del cliente es obligatorio.',
-                'max_length' => 'El nombre no puede superar los 150 caracteres.',
+                'max_length' => 'El nombre no puede superar los 100 caracteres.',
             ],
             'telefono' => [
                 'regex_match' => 'El teléfono no es válido. Ejemplo: 4545-6789 o +502 4545-6789.',
                 'max_length' => 'El teléfono es demasiado largo.',
+            ],
+            'direccion' => [
+                'required' => 'La dirección del cliente es obligatoria.',
+                'max_length' => 'La dirección no puede superar los 255 caracteres.',
             ],
         ])) {
             return view('clientes/form', [
@@ -105,26 +103,24 @@ class Clientes extends BaseController
 
         $data = $this->request->getPost();
 
-        if (empty($data['activo'])) {
-            $data['activo'] = 0;
-        } else {
-            $data['activo'] = 1;
-        }
-
         $data['telefono'] = $this->clienteModel->normalizeTelefono($data['telefono'] ?? '');
 
         if (!$this->validate([
-            'nombre' => 'required|max_length[150]|trim',
+            'nombre' => 'required|max_length[100]|trim',
             'telefono' => 'permit_empty|max_length[20]|regex_match[/^(\+502\s?)?[0-9\s\-\(\)]{8,20}$/]',
-            'activo' => 'required|in_list[0,1]',
+            'direccion' => 'required|max_length[255]|trim',
         ], [
             'nombre' => [
                 'required' => 'El nombre del cliente es obligatorio.',
-                'max_length' => 'El nombre no puede superar los 150 caracteres.',
+                'max_length' => 'El nombre no puede superar los 100 caracteres.',
             ],
             'telefono' => [
                 'regex_match' => 'El teléfono no es válido para Guatemala. Ejemplo: 4545-6789 o +502 4545-6789.',
                 'max_length' => 'El teléfono es demasiado largo.',
+            ],
+            'direccion' => [
+                'required' => 'La dirección del cliente es obligatoria.',
+                'max_length' => 'La dirección no puede superar los 255 caracteres.',
             ],
         ])) {
             return view('clientes/form', [

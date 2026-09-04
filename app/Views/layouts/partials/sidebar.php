@@ -7,16 +7,22 @@
                 Dashboard
             </a>
 
+            <?php $rol = strtolower(trim((string) session()->get('rol_nombre'))); ?>
+
+            <?php if (in_array($rol, ['administrador', 'secretaria'], true)): ?>
             <a class="nav-link" href="<?= base_url('clientes') ?>">
                 <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
                 Clientes
             </a>
+            <?php endif; ?>
+            <?php if ($rol === 'administrador'): ?>
             <a class="nav-link" href="<?= base_url('contadores') ?>">
                 <div class="sb-nav-link-icon">
                     <i class="fas fa-gauge-high"></i>
                 </div>
                 Contadores
             </a>
+            <?php endif; ?>
 
             <a class="nav-link" href="<?= base_url('lecturas') ?>">
                 <div class="sb-nav-link-icon">
@@ -26,6 +32,7 @@
             </a>
 
 
+            <?php if ($rol === 'administrador'): ?>
             <a class="nav-link" href="<?= base_url('servicios') ?>">
                 <div class="sb-nav-link-icon">
                     <i class="fas fa-faucet-drip"></i>
@@ -40,6 +47,16 @@
                 Tarifas
 
             </a>
+            <?php endif; ?>
+
+            <?php if (in_array($rol, ['administrador', 'secretaria'], true)): ?>
+            <a class="nav-link" href="<?= base_url('pagos') ?>">
+                <div class="sb-nav-link-icon">
+                    <i class="fas fa-cash-register"></i>
+                </div>
+                Pagos
+            </a>
+            <?php endif; ?>
         </div>
     </div>
     <div class="sb-sidenav-footer">

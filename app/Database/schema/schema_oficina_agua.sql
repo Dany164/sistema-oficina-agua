@@ -107,6 +107,11 @@ CREATE TABLE Tb_Metodos_Pago (
     UNIQUE KEY uk_metodos_pago_nombre (metodo)
 ) ENGINE=InnoDB;
 
+INSERT INTO Tb_Metodos_Pago (metodo) VALUES
+    ('Efectivo'),
+    ('Transferencia'),
+    ('Tarjeta');
+
 -- ---------------------------------------------------------
 -- Tb_lecturas  (auditada)
 -- ---------------------------------------------------------
@@ -155,6 +160,9 @@ CREATE TABLE Tb_Pagos (
     usuario_id       INT UNSIGNED NOT NULL,
     metodos_pago_id  INT UNSIGNED NOT NULL,
     observaciones    VARCHAR(255) NULL,
+    anulado          BOOLEAN NOT NULL DEFAULT 0,
+    anulado_at      DATETIME NULL,
+    anulado_por      INT UNSIGNED NULL,
     PRIMARY KEY (pago_id),
     -- un pago cubre siempre la lectura completa -> nunca puede haber 2 pagos
     -- para la misma lectura (evita duplicados por doble clic / reintento)
@@ -167,7 +175,9 @@ CREATE TABLE Tb_Pagos (
     CONSTRAINT fk_pagos_usuario
         FOREIGN KEY (usuario_id) REFERENCES Tb_Usuarios(usuario_id),
     CONSTRAINT fk_pagos_metodo
-        FOREIGN KEY (metodos_pago_id) REFERENCES Tb_Metodos_Pago(metodos_pago_id)
+        FOREIGN KEY (metodos_pago_id) REFERENCES Tb_Metodos_Pago(metodos_pago_id),
+    CONSTRAINT fk_pagos_anulado_por
+        FOREIGN KEY (anulado_por) REFERENCES Tb_Usuarios(usuario_id)
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------
