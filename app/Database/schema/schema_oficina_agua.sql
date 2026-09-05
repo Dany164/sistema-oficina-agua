@@ -20,11 +20,7 @@ CREATE TABLE Tb_Roles (
     UNIQUE KEY uk_roles_nombre (nombre)
 ) ENGINE=InnoDB;
 
-INSERT INTO Tb_Roles (nombre) VALUES
-    ('Administrador'),
-    ('Secretaria'),
-    ('Lector');
--- ---------------------------------------------------------
+-------------------------------------------
 -- Tb_Clientes
 -- ---------------------------------------------------------
 CREATE TABLE Tb_Clientes (
@@ -106,11 +102,6 @@ CREATE TABLE Tb_Metodos_Pago (
     PRIMARY KEY (metodos_pago_id),
     UNIQUE KEY uk_metodos_pago_nombre (metodo)
 ) ENGINE=InnoDB;
-
-INSERT INTO Tb_Metodos_Pago (metodo) VALUES
-    ('Efectivo'),
-    ('Transferencia'),
-    ('Tarjeta');
 
 -- ---------------------------------------------------------
 -- Tb_lecturas  (auditada)
