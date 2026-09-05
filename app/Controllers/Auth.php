@@ -69,6 +69,7 @@ class Auth extends BaseController
             'rol_nombre' => $usuario['rol_nombre'], //para que se muestre en el sidebar
             'logged_in'   => true,
         ]);
+        $usuarioModel->update($usuario['usuario_id'], ['ultimo_acceso' => date('Y-m-d H:i:s')]);
 
         return redirect()->to(base_url('main'));
     }
