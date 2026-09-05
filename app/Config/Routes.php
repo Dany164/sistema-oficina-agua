@@ -79,4 +79,14 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->post('annul/(:num)', 'Pagos::annul/$1');
         $routes->get('receipt/(:num)', 'Pagos::receipt/$1');
     });
+
+    $routes->group('usuarios', ['filter' => 'role:administrador'], static function ($routes) {
+        $routes->get('/', 'Usuarios::index');
+        $routes->get('new', 'Usuarios::new');
+        $routes->post('create', 'Usuarios::create');
+        $routes->get('edit/(:num)', 'Usuarios::edit/$1');
+        $routes->post('update/(:num)', 'Usuarios::update/$1');
+        $routes->post('delete/(:num)', 'Usuarios::delete/$1');
+        $routes->post('toggle/(:num)', 'Usuarios::toggle/$1');
+    });
 });

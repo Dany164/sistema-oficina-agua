@@ -51,6 +51,8 @@ CREATE TABLE Tb_Usuarios (
     email          VARCHAR(150) NOT NULL,
     password_hash  VARCHAR(255) NOT NULL,
     rol_id         INT UNSIGNED NOT NULL,
+    activo         BOOLEAN NOT NULL DEFAULT 1,
+    ultimo_acceso  DATETIME NULL,
     PRIMARY KEY (usuario_id),
     UNIQUE KEY uk_usuarios_email (email),
     KEY idx_usuarios_rol (rol_id),

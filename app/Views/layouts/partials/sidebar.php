@@ -33,6 +33,12 @@
 
 
             <?php if ($rol === 'administrador'): ?>
+            <a class="nav-link" href="<?= base_url('usuarios') ?>">
+                <div class="sb-nav-link-icon">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                Usuarios
+            </a>
             <a class="nav-link" href="<?= base_url('servicios') ?>">
                 <div class="sb-nav-link-icon">
                     <i class="fas fa-faucet-drip"></i>
