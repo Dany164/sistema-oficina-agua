@@ -8,7 +8,7 @@ class UsuarioModel extends Model
 {
     protected $table            = 'Tb_Usuarios';
     protected $primaryKey       = 'usuario_id';
-    protected $allowedFields    = ['rol_id', 'nombre', 'email', 'password_hash'];
+    protected $allowedFields    = ['rol_id', 'nombre', 'email', 'password_hash', 'activo', 'ultimo_acceso'];
 
     protected $returnType       = 'array';
 
@@ -22,6 +22,7 @@ class UsuarioModel extends Model
         return $this->select('Tb_Usuarios.*, Tb_Roles.nombre AS rol_nombre')
                 ->join('Tb_Roles', 'Tb_Roles.rol_id = Tb_Usuarios.rol_id')
                 ->where('Tb_Usuarios.email', $email)
+                ->where('Tb_Usuarios.activo', 1)
                 ->first();
     }
 }
