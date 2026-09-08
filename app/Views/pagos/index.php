@@ -51,8 +51,15 @@
         <table id="datatablesSimple" class="table table-striped table-bordered">
             <thead>
                 <tr>
-                    <th>Recibo</th><th>Fecha</th><th>Cliente</th><th>Contador</th>
-                    <th>Monto</th>                    <th>Método</th><th>Estado</th><th>Usuario</th><th>Acciones</th>
+                    <th>Recibo</th>
+                    <th>Fecha</th>
+                    <th>Cliente</th>
+                    <th>Contador</th>
+                    <th>Monto</th>
+                    <th>Método</th>
+                    <th>Estado</th>
+                    <th>Usuario</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -74,12 +81,14 @@
                         <td><?= esc($pago['usuario']) ?></td>
                         <td>
                             <a href="<?= base_url('pagos/receipt/' . $pago['pago_id']) ?>" class="btn btn-primary btn-sm" target="_blank">Recibo</a>
-                            <?php if ((int) $pago['anulado'] === 0): ?>
-                            <a href="<?= base_url('pagos/edit/' . $pago['pago_id']) ?>" class="btn btn-warning btn-sm">Editar</a>
-                            <form action="<?= base_url('pagos/annul/' . $pago['pago_id']) ?>" method="post" class="d-inline">
-                                <?= csrf_field() ?>
-                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Deseas anular este pago?')">Anular</button>
-                            </form>
+                            <?php if (
+                                (int) $pago['anulado'] === 0 &&
+                                strtolower(trim((string) session()->get('rol_nombre'))) !== 'lector'
+                            ): ?> <a href="<?= base_url('pagos/edit/' . $pago['pago_id']) ?>" class="btn btn-warning btn-sm">Editar</a>
+                                <form action="<?= base_url('pagos/annul/' . $pago['pago_id']) ?>" method="post" class="d-inline">
+                                    <?= csrf_field() ?>
+                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Deseas anular este pago?')">Anular</button>
+                                </form>
                             <?php endif; ?>
                         </td>
                     </tr>
