@@ -278,7 +278,7 @@ class Pagos extends BaseController
             ->select(['l.lectura_id', 'l.fecha', 'l.monto_total', 'c.numero_registro', 'cl.nombre AS cliente'])
             ->join('Tb_Contadores c', 'c.contador_id = l.contador_id')
             ->join('Tb_Clientes cl', 'cl.cliente_id = c.cliente_id')
-            ->join('Tb_Pagos p', 'p.lectura_id = l.lectura_id', 'left')
+            ->join('Tb_Pagos p', 'p.lectura_id = l.lectura_id AND p.anulado = 0', 'left')
             ->where('p.pago_id IS NULL', null, false)
             ->orderBy('l.fecha', 'DESC')
             ->get()

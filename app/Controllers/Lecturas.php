@@ -60,7 +60,7 @@ class Lecturas extends BaseController
             )
             ->join(
                 'Tb_Pagos p',
-                'p.lectura_id = l.lectura_id',
+                'p.lectura_id = l.lectura_id AND p.anulado = 0',
                 'left'
             )
             ->orderBy('l.fecha', 'DESC')
@@ -445,7 +445,11 @@ class Lecturas extends BaseController
             ->join('Tb_Clientes cl', 'cl.cliente_id = c.cliente_id')
             ->join('Tb_Tipos_Servicio ts', 'ts.tipo_servicio_id = c.tipo_servicio_id')
             ->join('Tb_Usuarios u', 'u.usuario_id = l.usuario_lector_id')
-            ->join('Tb_Pagos p', 'p.lectura_id = l.lectura_id', 'left')
+            ->join(
+                'Tb_Pagos p',
+                'p.lectura_id = l.lectura_id AND p.anulado = 0',
+                'left'
+            )
             ->where('l.lectura_id', $id)
             ->get()
             ->getRowArray();
