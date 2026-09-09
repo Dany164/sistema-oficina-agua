@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -15,6 +16,7 @@
 
     <?= $this->renderSection('styles') ?>
 </head>
+
 <body class="sb-nav-fixed">
 
     <?= $this->include('layouts/partials/navbar') ?>
@@ -32,7 +34,7 @@
             <footer class="py-4 bg-light mt-auto">
                 <div class="container-fluid px-4">
                     <div class="d-flex align-items-center justify-content-between small">
-                        <div class="text-muted">Copyright &copy; Mi Proyecto <?= date('Y') ?></div>
+                        <div class="text-muted">&copy; <?= date('Y') ?> Oficina de Agua. Todos los derechos reservados.</div>
                     </div>
                 </div>
             </footer>
@@ -45,4 +47,5 @@
 
     <?= $this->renderSection('scripts') ?>
 </body>
+
 </html>
