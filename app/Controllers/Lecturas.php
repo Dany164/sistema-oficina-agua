@@ -20,7 +20,7 @@ class Lecturas extends BaseController
     {
         $db = db_connect();
 
-        $lecturas = $db->table('Tb_lecturas l')
+        $lecturas = $db->table('Tb_Lecturas l')
             ->select([
                 'l.lectura_id',
                 'l.lectura_anterior',
@@ -693,7 +693,7 @@ class Lecturas extends BaseController
     {
         $db = db_connect();
 
-        $lectura = $db->table('Tb_lecturas l')
+        $lectura = $db->table('Tb_Lecturas l')
             ->select('
             l.*,
             c.numero_registro,
