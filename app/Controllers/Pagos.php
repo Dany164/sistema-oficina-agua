@@ -32,11 +32,22 @@ class Pagos extends BaseController
             ->join('Tb_Metodos_Pago m', 'm.metodos_pago_id = p.metodos_pago_id')
             ->join('Tb_Usuarios u', 'u.usuario_id = p.usuario_id');
 
-        if ($request->getGet('fecha_desde')) {
-            $builder->where('p.fecha_pago >=', $request->getGet('fecha_desde'));
+        $fechaDesde = $request->getGet('fecha_desde');
+        $fechaHasta = $request->getGet('fecha_hasta');
+
+        if ($fechaDesde && $fechaHasta && $fechaDesde > $fechaHasta) {
+            return redirect()->to('/pagos')->with(
+                'error',
+                'La fecha "Desde" no puede ser posterior a la fecha "Hasta".'
+            );
         }
-        if ($request->getGet('fecha_hasta')) {
-            $builder->where('p.fecha_pago <=', $request->getGet('fecha_hasta'));
+
+        if ($fechaDesde) {
+            $builder->where('p.fecha_pago >=', $fechaDesde);
+        }
+
+        if ($fechaHasta) {
+            $builder->where('p.fecha_pago <=', $fechaHasta);
         }
         if ($request->getGet('cliente')) {
             $builder->like('cl.nombre', $request->getGet('cliente'));
@@ -278,7 +289,7 @@ class Pagos extends BaseController
             ->select(['l.lectura_id', 'l.fecha', 'l.monto_total', 'c.numero_registro', 'cl.nombre AS cliente'])
             ->join('Tb_Contadores c', 'c.contador_id = l.contador_id')
             ->join('Tb_Clientes cl', 'cl.cliente_id = c.cliente_id')
-            ->join('Tb_Pagos p', 'p.lectura_id = l.lectura_id', 'left')
+            ->join('Tb_Pagos p', 'p.lectura_id = l.lectura_id AND p.anulado = 0', 'left')
             ->where('p.pago_id IS NULL', null, false)
             ->orderBy('l.fecha', 'DESC')
             ->get()
