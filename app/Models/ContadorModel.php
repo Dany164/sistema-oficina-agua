@@ -6,7 +6,7 @@ use CodeIgniter\Model;
 
 class ContadorModel extends Model
 {
-    protected $table      = 'tb_contadores';
+    protected $table      = 'Tb_Contadores';
     protected $primaryKey = 'contador_id';
 
     protected $returnType = 'array';

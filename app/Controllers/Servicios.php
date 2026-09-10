@@ -45,7 +45,7 @@ class Servicios extends BaseController
         $data = $this->request->getPost();
 
         if (!$this->validate([
-            'tipo_servicio' => 'required|max_length[50]|is_unique[tb_tipos_servicio.tipo_servicio]',
+            'tipo_servicio' => 'required|max_length[50]|is_unique[Tb_Tipos_Servicio.tipo_servicio]',
             'litros_incluidos' => 'permit_empty|integer|greater_than_equal_to[0]',
         ], [
             'tipo_servicio' => [
@@ -107,7 +107,7 @@ class Servicios extends BaseController
         $data = $this->request->getPost();
 
         if (!$this->validate([
-            'tipo_servicio' => "required|max_length[50]|is_unique[tb_tipos_servicio.tipo_servicio,tipo_servicio_id,{$id}]",
+            'tipo_servicio' => "required|max_length[50]|is_unique[Tb_Tipos_Servicio.tipo_servicio,tipo_servicio_id,{$id}]",
             'litros_incluidos' => 'permit_empty|integer|greater_than_equal_to[0]',
         ], [
             'tipo_servicio' => [

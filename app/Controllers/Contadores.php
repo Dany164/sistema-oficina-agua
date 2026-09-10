@@ -17,7 +17,7 @@ class Contadores extends BaseController
     {
         $db = db_connect();
 
-        $data['contadores'] = $db->table('tb_contadores c')
+        $data['contadores'] = $db->table('Tb_Contadores c')
             ->select('
                 c.contador_id,
                 c.numero_registro,
@@ -28,9 +28,9 @@ class Contadores extends BaseController
                 cl.nombre AS cliente,
                 ts.tipo_servicio
             ')
-            ->join('tb_clientes cl', 'cl.cliente_id = c.cliente_id')
+            ->join('Tb_Clientes cl', 'cl.cliente_id = c.cliente_id')
             ->join(
-                'tb_tipos_servicio ts',
+                'Tb_Tipos_Servicio ts',
                 'ts.tipo_servicio_id = c.tipo_servicio_id'
             )
             ->orderBy('c.contador_id', 'DESC')
@@ -44,12 +44,12 @@ class Contadores extends BaseController
     {
         $db = db_connect();
 
-        $data['clientes'] = $db->table('tb_clientes')
+        $data['clientes'] = $db->table('Tb_Clientes')
             ->orderBy('nombre', 'ASC')
             ->get()
             ->getResultArray();
 
-        $data['tiposServicio'] = $db->table('tb_tipos_servicio')
+        $data['tiposServicio'] = $db->table('Tb_Tipos_Servicio')
             ->orderBy('tipo_servicio', 'ASC')
             ->get()
             ->getResultArray();
@@ -61,7 +61,7 @@ class Contadores extends BaseController
     {
         $reglas = [
             'numero_registro' => [
-                'rules' => 'required|max_length[50]|is_unique[tb_contadores.numero_registro]',
+                'rules' => 'required|max_length[50]|is_unique[Tb_Contadores.numero_registro]',
                 'errors' => [
                     'required' => 'El número de registro es obligatorio.',
                     'max_length' => 'El número de registro no puede superar los 50 caracteres.',
@@ -78,7 +78,7 @@ class Contadores extends BaseController
             ],
 
             'cliente_id' => [
-                'rules' => 'required|integer|is_not_unique[tb_clientes.cliente_id]',
+                'rules' => 'required|integer|is_not_unique[Tb_Clientes.cliente_id]',
                 'errors' => [
                     'required' => 'Debe seleccionar un cliente.',
                     'is_not_unique' => 'El cliente seleccionado no existe.',
@@ -86,7 +86,7 @@ class Contadores extends BaseController
             ],
 
             'tipo_servicio_id' => [
-                'rules' => 'required|integer|is_not_unique[tb_tipos_servicio.tipo_servicio_id]',
+                'rules' => 'required|integer|is_not_unique[Tb_Tipos_Servicio.tipo_servicio_id]',
                 'errors' => [
                     'required' => 'Debe seleccionar un tipo de servicio.',
                     'is_not_unique' => 'El tipo de servicio seleccionado no existe.',
@@ -130,12 +130,12 @@ class Contadores extends BaseController
 
         $db = db_connect();
 
-        $clientes = $db->table('tb_clientes')
+        $clientes = $db->table('Tb_Clientes')
             ->orderBy('nombre', 'ASC')
             ->get()
             ->getResultArray();
 
-        $tiposServicio = $db->table('tb_tipos_servicio')
+        $tiposServicio = $db->table('Tb_Tipos_Servicio')
             ->orderBy('tipo_servicio', 'ASC')
             ->get()
             ->getResultArray();
@@ -160,8 +160,8 @@ class Contadores extends BaseController
         $reglas = [
             'numero_registro' => 'required|max_length[50]',
             'direccion_servicio' => 'required|max_length[50]',
-            'cliente_id' => 'required|integer|is_not_unique[tb_clientes.cliente_id]',
-            'tipo_servicio_id' => 'required|integer|is_not_unique[tb_tipos_servicio.tipo_servicio_id]',
+            'cliente_id' => 'required|integer|is_not_unique[Tb_Clientes.cliente_id]',
+            'tipo_servicio_id' => 'required|integer|is_not_unique[Tb_Tipos_Servicio.tipo_servicio_id]',
         ];
 
         if (!$this->validate($reglas)) {
