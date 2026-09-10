@@ -178,9 +178,11 @@
                             </a>
 
                             <!-- Corregir -->
-                            <?php if (! $tienePago): ?>
-                                <a
-                                    href="<?= base_url('pagos/new?lectura_id=' . $lectura['lectura_id']) ?>"
+                            <?php if (
+                                ! $tienePago &&
+                                strtolower(trim((string) session()->get('rol_nombre'))) !== 'lector'
+                            ): ?>
+                                <a href="<?= base_url('pagos/new?lectura_id=' . $lectura['lectura_id']) ?>"
                                     class="btn btn-sm btn-success">
                                     Registrar pago
                                 </a>
