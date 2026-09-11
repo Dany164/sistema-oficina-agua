@@ -82,11 +82,13 @@
                         </td>
 
                         <td>
-                            <a
-                                href="<?= base_url('tarifas/edit/' . $tarifa['tarifa_id']) ?>"
-                                class="btn btn-warning btn-sm">
-                                Editar
-                            </a>
+                            <?php if (empty($tarifa['vigente_hasta'])): ?>
+                                <a
+                                    href="<?= base_url('tarifas/edit/' . $tarifa['tarifa_id']) ?>"
+                                    class="btn btn-warning btn-sm">
+                                    Editar
+                                </a>
+                            <?php endif; ?>
                         </td>
 
                     </tr>
