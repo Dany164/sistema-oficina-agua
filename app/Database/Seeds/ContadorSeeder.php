@@ -8,18 +8,46 @@ class ContadorSeeder extends Seeder
 {
     public function run()
     {
-        $contadores = [
-            ['numero_registro' => 'CNT-0001', 'direccion_servicio' => 'Zona 1, Calle Principal 12',        'estado' => 1, 'cliente_id' => 1,  'tipo_servicio_id' => 1],
-            ['numero_registro' => 'CNT-0002', 'direccion_servicio' => 'Zona 3, Avenida Central 45',        'estado' => 1, 'cliente_id' => 2,  'tipo_servicio_id' => 2],
-            ['numero_registro' => 'CNT-0003', 'direccion_servicio' => 'Zona 2, Callejón Las Rosas 8',      'estado' => 1, 'cliente_id' => 3,  'tipo_servicio_id' => 1],
-            ['numero_registro' => 'CNT-0004', 'direccion_servicio' => 'Zona 5, Colonia El Progreso 22',    'estado' => 1, 'cliente_id' => 4,  'tipo_servicio_id' => 2],
-            ['numero_registro' => 'CNT-0005', 'direccion_servicio' => 'Zona 1, Barrio San José 3',         'estado' => 0, 'cliente_id' => 5,  'tipo_servicio_id' => 1],
-            ['numero_registro' => 'CNT-0006', 'direccion_servicio' => 'Zona 4, Residenciales del Valle 15','estado' => 1, 'cliente_id' => 6,  'tipo_servicio_id' => 2],
-            ['numero_registro' => 'CNT-0007', 'direccion_servicio' => 'Zona 2, Sector La Ceiba 9',         'estado' => 1, 'cliente_id' => 7,  'tipo_servicio_id' => 1],
-            ['numero_registro' => 'CNT-0008', 'direccion_servicio' => 'Zona 3, Colonia Buenos Aires 30',   'estado' => 1, 'cliente_id' => 8,  'tipo_servicio_id' => 1],
-            ['numero_registro' => 'CNT-0009', 'direccion_servicio' => 'Zona 6, Aldea San Antonio 5',       'estado' => 0, 'cliente_id' => 9,  'tipo_servicio_id' => 2],
-            ['numero_registro' => 'CNT-0010', 'direccion_servicio' => 'Zona 1, Calle Real 18',             'estado' => 1, 'cliente_id' => 10, 'tipo_servicio_id' => 1],
-        ];
+        // Obtener clientes directamente con sus datos completos
+        $clientes = $this->db->table('Tb_Clientes')->get()->getResultArray();
+
+        // Mapear tipos de servicio por nombre -> tipo_servicio_id
+        $tipos = $this->db->table('Tb_Tipos_Servicio')->get()->getResultArray();
+        $tipoPorNombre = [];
+        foreach ($tipos as $t) {
+            $tipoPorNombre[$t['tipo_servicio']] = $t['tipo_servicio_id'];
+        }
+
+        $idCuartoPaja = $tipoPorNombre['1/4 paja'] ?? null;
+        $idMediaPaja  = $tipoPorNombre['1/2 paja'] ?? null;
+
+        $contadores = [];
+        $numero = 1;
+
+        foreach ($clientes as $i => $cliente) {
+            // Alterna el tipo de servicio entre 1/4 y 1/2 paja
+            $tipoServicioId = ($i % 2 === 0) ? $idCuartoPaja : $idMediaPaja;
+
+            if ($tipoServicioId === null) {
+                continue; // Por si algún tipo de servicio no existe todavía
+            }
+
+            // 2 de cada 10 contadores quedan inactivos, para variedad
+            $estado = ($i % 10 === 9) ? 0 : 1;
+
+            // Extrae la dirección directamente del registro del cliente
+            $direccionCliente = $cliente['direccion'] ?? 'Dirección sin registrar';
+
+            $contadores[] = [
+                'numero_registro'    => 'CNT-' . str_pad((string) $numero, 4, '0', STR_PAD_LEFT),
+                'direccion_servicio' => $direccionCliente,
+                'estado'             => $estado,
+                'cliente_id'         => $cliente['cliente_id'],
+                'tipo_servicio_id'   => $tipoServicioId,
+            ];
+
+            $numero++;
+        }
 
         foreach ($contadores as $contador) {
             $existe = $this->db->table('Tb_Contadores')

@@ -20,7 +20,7 @@ CREATE TABLE Tb_Roles (
     UNIQUE KEY uk_roles_nombre (nombre)
 ) ENGINE=InnoDB;
 
--------------------------------------------
+-- -------------------------------------------
 -- Tb_Clientes
 -- ---------------------------------------------------------
 CREATE TABLE Tb_Clientes (
