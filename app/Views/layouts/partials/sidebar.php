@@ -6,10 +6,11 @@
                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                 Dashboard
             </a>
-        <div class="sb-sidenav-menu-heading">Gestión de Clientes</div>
+
             <?php $rol = strtolower(trim((string) session()->get('rol_nombre'))); ?>
 
             <?php if (in_array($rol, ['administrador', 'secretaria'], true)): ?>
+            <div class="sb-sidenav-menu-heading">Gestión de Clientes</div>
             <a class="nav-link" href="<?= base_url('clientes') ?>">
                 <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
                 Clientes
