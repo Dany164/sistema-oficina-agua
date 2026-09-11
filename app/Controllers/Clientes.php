@@ -3,14 +3,17 @@
 namespace App\Controllers;
 
 use App\Models\ClienteModel;
+use App\Models\ContadorModel;
 
 class Clientes extends BaseController
 {
     protected $clienteModel;
+    protected $contadorModel;
 
     public function __construct()
     {
         $this->clienteModel = new ClienteModel();
+        $this->contadorModel = new ContadorModel();
     }
 
     public function index()
@@ -144,8 +147,25 @@ class Clientes extends BaseController
             throw new \CodeIgniter\Exceptions\PageNotFoundException('Cliente no encontrado.');
         }
 
+        $tieneContador = $this->contadorModel
+            ->where('cliente_id', $id)
+            ->countAllResults();
+
+        if ($tieneContador > 0) {
+            session()->setFlashdata(
+                'error',
+                'No se puede eliminar el cliente porque tiene un contador asociado.'
+            );
+
+            return redirect()->to('/clientes');
+        }
+
         $this->clienteModel->delete($id);
-        session()->setFlashdata('success', 'Cliente eliminado correctamente.');
+
+        session()->setFlashdata(
+            'success',
+            'Cliente eliminado correctamente.'
+        );
 
         return redirect()->to('/clientes');
     }
