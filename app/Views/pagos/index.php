@@ -80,7 +80,13 @@
                         </td>
                         <td><?= esc($pago['usuario']) ?></td>
                         <td>
-                            <a href="<?= base_url('pagos/receipt/' . $pago['pago_id']) ?>" class="btn btn-primary btn-sm" target="_blank">Recibo</a>
+                            <a
+                                href="<?= base_url('pagos/receipt/' . $pago['pago_id']) ?>"
+                                class="btn btn-primary btn-sm"
+                                onclick="window.open(this.href, '_blank'); return false;">
+                                Recibo
+                            </a>
+
                             <?php if (
                                 (int) $pago['anulado'] === 0 &&
                                 strtolower(trim((string) session()->get('rol_nombre'))) !== 'lector'

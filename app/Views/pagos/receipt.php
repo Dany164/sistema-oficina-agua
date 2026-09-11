@@ -471,13 +471,30 @@
             Imprimir recibo
         </button>
 
-        <a
-            href="<?= base_url('pagos') ?>"
-            class="btn">
+        <button
+            type="button"
+            class="btn"
+            onclick="volverAPagos()">
             Volver a pagos
-        </a>
+        </button>
 
     </div>
+
+    <script>
+        function volverAPagos() {
+            if (window.opener && !window.opener.closed) {
+                window.close();
+
+                setTimeout(function() {
+                    if (!window.closed) {
+                        window.location.href = "<?= base_url('pagos') ?>";
+                    }
+                }, 100);
+            } else {
+                window.location.href = "<?= base_url('pagos') ?>";
+            }
+        }
+    </script>
 
 </body>
 

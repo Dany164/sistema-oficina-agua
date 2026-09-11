@@ -174,16 +174,6 @@
                         <!-- Acciones -->
                         <td>
 
-                            <!-- Ver recibo -->
-                            <a
-                                href="<?= base_url(
-                                            'lecturas/recibo/' . $lectura['lectura_id']
-                                        ) ?>"
-                                class="btn btn-sm btn-primary"
-                                target="_blank">
-                                Ver recibo
-                            </a>
-
                             <!-- Corregir -->
                             <?php if (
                                 ! $tienePago &&
