@@ -8,6 +8,7 @@ use CodeIgniter\Router\RouteCollection;
 $routes->get('login', 'Auth::login');
 $routes->post('login', 'Auth::attemptLogin');
 $routes->get('logout', 'Auth::logout');
+$routes->get('/', 'Home::index'); //Ruta Inicial, redirige al login (o main si ya se accedio)
 
 // Rutas protegidas: agrupadas bajo el filtro 'auth'
 $routes->group('', ['filter' => 'auth'], function ($routes) {

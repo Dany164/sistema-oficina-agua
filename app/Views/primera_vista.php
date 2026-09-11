@@ -111,7 +111,7 @@
                                 <?php endif; ?>
                             </td>
                             <td>
-                                <a href="<?= base_url('lecturas') ?>" class="btn btn-sm btn-primary">
+                                <a href="<?= base_url('lecturas?cliente_id=' . $cliente['cliente_id']) ?>" class="btn btn-sm btn-primary">
                                     Ver detalles
                                 </a>
                             </td>

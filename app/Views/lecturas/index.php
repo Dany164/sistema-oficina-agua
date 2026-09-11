@@ -4,6 +4,13 @@
 
 <h1 class="mt-4">Lecturas</h1>
 
+<?php if (! empty($clienteFiltrado)) : ?>
+    <div class="alert alert-info d-flex justify-content-between align-items-center">
+        <span>Mostrando lecturas de: <strong><?= esc($clienteFiltrado) ?></strong></span>
+        <a href="<?= base_url('lecturas') ?>" class="btn btn-sm btn-outline-secondary">Ver todas</a>
+    </div>
+<?php endif; ?>
+
 <ol class="breadcrumb mb-4">
     <li class="breadcrumb-item">
         <a href="<?= base_url('main') ?>">Dashboard</a>
