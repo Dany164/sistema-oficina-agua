@@ -71,7 +71,7 @@
 
                                 <option
                                     value="<?= esc($contador['contador_id']) ?>"
-                                    <?= (string) old('contador_id') === (string) $contador['contador_id'] ? 'selected' : '' ?>>
+                                    <?= (string) old('contador_id', (string) $contadorPreseleccionado) === (string) $contador['contador_id'] ? 'selected' : '' ?>>
 
                                     <?= esc($contador['numero_registro']) ?>
                                     -

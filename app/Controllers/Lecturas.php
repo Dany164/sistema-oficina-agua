@@ -17,52 +17,60 @@ class Lecturas extends BaseController
      * Listado de lecturas.
      */
     public function index()
-    {
-        $db = db_connect();
+{
+    $db = db_connect();
 
-        $lecturas = $db->table('Tb_Lecturas l')
-            ->select([
-                'l.lectura_id',
-                'l.lectura_anterior',
-                'l.lectura_actual',
-                'l.consumo_litros',
-                'l.litros_exceso',
-                'l.monto_base',
-                'l.monto_exceso',
-                'l.monto_total',
-                'l.fecha',
-                'l.contador_id',
-                'l.usuario_lector_id',
-                'l.tarifa_base_id',
-                'l.tarifa_exceso_id',
-                'c.numero_registro',
-                'c.direccion_servicio',
-                'cl.nombre AS cliente',
-                'ts.tipo_servicio',
-                'u.nombre AS lector',
-                'p.pago_id',
-            ])
-            ->join(
-                'Tb_Contadores c',
-                'c.contador_id = l.contador_id'
-            )
-            ->join(
-                'Tb_Clientes cl',
-                'cl.cliente_id = c.cliente_id'
-            )
-            ->join(
-                'Tb_Tipos_Servicio ts',
-                'ts.tipo_servicio_id = c.tipo_servicio_id'
-            )
-            ->join(
-                'Tb_Usuarios u',
-                'u.usuario_id = l.usuario_lector_id'
-            )
-            ->join(
-                'Tb_Pagos p',
-                'p.lectura_id = l.lectura_id AND p.anulado = 0',
-                'left'
-            )
+    $clienteId = $this->request->getGet('cliente_id');
+
+    $query = $db->table('Tb_Lecturas l')
+        ->select([
+            'l.lectura_id',
+            'l.lectura_anterior',
+            'l.lectura_actual',
+            'l.consumo_litros',
+            'l.litros_exceso',
+            'l.monto_base',
+            'l.monto_exceso',
+            'l.monto_total',
+            'l.fecha',
+            'l.contador_id',
+            'l.usuario_lector_id',
+            'l.tarifa_base_id',
+            'l.tarifa_exceso_id',
+            'c.numero_registro',
+            'c.direccion_servicio',
+            'cl.nombre AS cliente',
+            'ts.tipo_servicio',
+            'u.nombre AS lector',
+            'p.pago_id',
+        ])
+        ->join(
+            'Tb_Contadores c',
+            'c.contador_id = l.contador_id'
+        )
+        ->join(
+            'Tb_Clientes cl',
+            'cl.cliente_id = c.cliente_id'
+        )
+        ->join(
+            'Tb_Tipos_Servicio ts',
+            'ts.tipo_servicio_id = c.tipo_servicio_id'
+        )
+        ->join(
+            'Tb_Usuarios u',
+            'u.usuario_id = l.usuario_lector_id'
+        )
+        ->join(
+            'Tb_Pagos p',
+            'p.lectura_id = l.lectura_id AND p.anulado = 0',
+            'left'
+        );
+
+        if ($clienteId) {
+            $query->where('cl.cliente_id', (int) $clienteId);
+        }
+
+        $lecturas = $query
             ->orderBy('l.fecha', 'DESC')
             ->orderBy('l.lectura_id', 'DESC')
             ->get()
@@ -76,12 +84,18 @@ class Lecturas extends BaseController
             }
         }
 
+        $clienteFiltrado = null;
+        if ($clienteId && ! empty($lecturas)) {
+            $clienteFiltrado = $lecturas[0]['cliente'];
+        }
+
         return view('lecturas/index', [
             'title'           => 'Lecturas',
             'lecturas'        => $lecturas,
             'ultimasLecturas' => $ultimasLecturas,
+            'clienteFiltrado' => $clienteFiltrado,
         ]);
-    }
+}
 
     /**
      * Formulario para registrar una nueva lectura.
@@ -90,9 +104,12 @@ class Lecturas extends BaseController
     {
         $contadores = $this->obtenerContadoresActivos();
 
+         $contadorPreseleccionado = $this->request->getGet('contador_id'); //Para cuando se accede por Dashboard
+
         return view('lecturas/form', [
             'title'      => 'Nueva lectura',
             'contadores' => $contadores,
+            'contadorPreseleccionado' => $contadorPreseleccionado ? (int) $contadorPreseleccionado : null,
         ]);
     }
 
