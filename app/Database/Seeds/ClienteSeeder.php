@@ -19,6 +19,16 @@ class ClienteSeeder extends Seeder
             ['nombre' => 'Miguel Ángel Sandoval',   'telefono' => '5588-9900', 'direccion' => 'Zona 3, Colonia Buenos Aires 30'],
             ['nombre' => 'Claudia Beatriz Pérez',   'telefono' => '5599-0011', 'direccion' => 'Zona 6, Aldea San Antonio 5'],
             ['nombre' => 'Roberto Carlos Méndez',   'telefono' => '5500-1122', 'direccion' => 'Zona 1, Calle Real 18'],
+            ['nombre' => 'Diego Armando Villatoro',  'telefono' => '5511-3344', 'direccion' => 'Zona 4, Colonia Las Flores 7'],
+            ['nombre' => 'Karla Vanessa Ordóñez',    'telefono' => '5522-4455', 'direccion' => 'Zona 2, Barrio El Centro 11'],
+            ['nombre' => 'Erick Fernando Barrios',   'telefono' => '5533-5566', 'direccion' => 'Zona 5, Colonia La Esperanza 19'],
+            ['nombre' => 'Silvia Marisol Cabrera',   'telefono' => '5544-6677', 'direccion' => 'Zona 1, Calle del Comercio 4'],
+            ['nombre' => 'Byron Estuardo Reyes',     'telefono' => '5555-7788', 'direccion' => 'Zona 6, Aldea El Rosario 12'],
+            ['nombre' => 'Heidy Lorena Aguilar',     'telefono' => '5566-8899', 'direccion' => 'Zona 3, Sector Vista Hermosa 6'],
+            ['nombre' => 'Otto René Villagrán',      'telefono' => '5577-9900', 'direccion' => 'Zona 2, Colonia San Rafael 25'],
+            ['nombre' => 'Yesenia Paola Girón',      'telefono' => '5588-0011', 'direccion' => 'Zona 4, Barrio Nuevo 9'],
+            ['nombre' => 'Marvin Alexander Solórzano', 'telefono' => '5599-1122', 'direccion' => 'Zona 1, Colonia Las Américas 14'],
+            ['nombre' => 'Ingrid Carolina Xitumul',  'telefono' => '5500-2233', 'direccion' => 'Zona 5, Aldea San Miguel 3'],
         ];
 
         foreach ($clientes as $cliente) {
