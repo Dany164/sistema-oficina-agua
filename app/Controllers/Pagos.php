@@ -124,12 +124,10 @@ class Pagos extends BaseController
             'title' => 'Nuevo pago',
             'pago' => [
                 'fecha_pago' => date('Y-m-d'),
-                'numero_recibo' => '',
                 'lectura_id' => '',
                 'metodos_pago_id' => '',
                 'observaciones' => '',
-            ],
-            'lecturas' => $this->obtenerLecturasPendientes(),
+            ],            'lecturas' => $this->obtenerLecturasPendientes(),
             'metodosPago' => $this->obtenerMetodosPago(),
             'errors' => [],
         ]);
@@ -155,21 +153,54 @@ class Pagos extends BaseController
             );
         }
 
+        $db = db_connect();
+
         try {
             $this->establecerUsuarioAuditoria();
+
+            $db->transStart();
+
+            // Se utiliza temporalmente un código único mientras MySQL
+            // genera el pago_id AUTO_INCREMENT.
+            $numeroTemporal = 'TMP-' . bin2hex(random_bytes(8));
+
             $this->pagoModel->insert([
                 'monto' => $lectura['monto_total'],
                 'fecha_pago' => $data['fecha_pago'],
-                'numero_recibo' => trim($data['numero_recibo']),
+                'numero_recibo' => $numeroTemporal,
                 'lectura_id' => $lectura['lectura_id'],
                 'usuario_id' => session()->get('usuario_id'),
                 'metodos_pago_id' => $data['metodos_pago_id'],
                 'observaciones' => trim($data['observaciones'] ?? '') ?: null,
             ]);
-        } catch (DatabaseException $e) {
+
+            $pagoId = $this->pagoModel->getInsertID();
+
+            $numeroRecibo = 'REC-' . str_pad(
+                (string) $pagoId,
+                6,
+                '0',
+                STR_PAD_LEFT
+            );
+
+            $this->pagoModel->update($pagoId, [
+                'numero_recibo' => $numeroRecibo,
+            ]);
+
+            $db->transComplete();
+
+            if (!$db->transStatus()) {
+                throw new DatabaseException('No se pudo completar la transacción.');
+            }
+
+        } catch (\Throwable $e) {
+            if ($db->transStatus() === false) {
+                $db->transRollback();
+            }
+
             return redirect()->back()->withInput()->with(
                 'error',
-                'No se pudo guardar el pago. Verifica que el número de recibo no esté repetido.'
+                'No se pudo guardar el pago.'
             );
         }
 
@@ -224,14 +255,13 @@ class Pagos extends BaseController
             $this->establecerUsuarioAuditoria();
             $this->pagoModel->update($id, [
                 'fecha_pago' => $data['fecha_pago'],
-                'numero_recibo' => trim($data['numero_recibo']),
                 'metodos_pago_id' => $data['metodos_pago_id'],
                 'observaciones' => trim($data['observaciones'] ?? '') ?: null,
             ]);
         } catch (DatabaseException $e) {
             return redirect()->back()->withInput()->with(
                 'error',
-                'No se pudo actualizar el pago. Verifica que el número de recibo no esté repetido.'
+                'No se pudo actualizar el pago.'
             );
         }
 
@@ -282,27 +312,14 @@ class Pagos extends BaseController
 
     private function validarPago(array $data, ?int $id = null): bool
     {
-        $reciboRule = 'required|max_length[20]';
-        if ($id === null) {
-            $reciboRule .= '|is_unique[Tb_Pagos.numero_recibo]';
-        } else {
-            $reciboRule .= "|is_unique[Tb_Pagos.numero_recibo,numero_recibo,pago_id,{$id}]";
-        }
-
         return $this->validate([
             'fecha_pago' => 'required|valid_date[Y-m-d]',
-            'numero_recibo' => $reciboRule,
             'metodos_pago_id' => 'required|integer',
             'observaciones' => 'permit_empty|max_length[255]',
         ], [
             'fecha_pago' => [
                 'required' => 'La fecha del pago es obligatoria.',
                 'valid_date' => 'La fecha del pago no es válida.',
-            ],
-            'numero_recibo' => [
-                'required' => 'El número de recibo es obligatorio.',
-                'max_length' => 'El número de recibo no puede superar 20 caracteres.',
-                'is_unique' => 'Ya existe un pago con ese número de recibo.',
             ],
             'metodos_pago_id' => [
                 'required' => 'El método de pago es obligatorio.',
