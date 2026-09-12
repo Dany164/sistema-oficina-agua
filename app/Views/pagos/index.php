@@ -33,10 +33,22 @@
                 <label class="form-label">Estado</label>
                 <select name="estado" class="form-select">
                     <option value="">Todos</option>
-                    <option value="pagado" <?= ($filtros['estado'] ?? '') === 'pagado' ? 'selected' : '' ?>>Pagados</option>
-                    <option value="anulado" <?= ($filtros['estado'] ?? '') === 'anulado' ? 'selected' : '' ?>>Anulados</option>
-                </select>
-            </div>
+
+                    <option value="pagado"
+                        <?= ($filtros['estado'] ?? '') === 'pagado' ? 'selected' : '' ?>>
+                        Pagados
+                    </option>
+
+                    <option value="pendiente"
+                        <?= ($filtros['estado'] ?? '') === 'pendiente' ? 'selected' : '' ?>>
+                        Pendientes
+                    </option>
+
+                    <option value="anulado"
+                        <?= ($filtros['estado'] ?? '') === 'anulado' ? 'selected' : '' ?>>
+                        Anulados
+                    </option>
+                </select>            </div>
             <div class="col-md-3 d-flex gap-2">
                 <button class="btn btn-secondary" type="submit">Filtrar</button>
                 <a class="btn btn-outline-secondary" href="<?= base_url('pagos') ?>">Limpiar</a>
@@ -72,32 +84,71 @@
                         <td>Q <?= number_format((float) $pago['monto'], 2) ?></td>
                         <td><?= esc($pago['metodo']) ?></td>
                         <td>
-                            <?php if ((int) $pago['anulado'] === 1): ?>
+                            <?php if (!empty($pago['pendiente'])): ?>
+
+                                <span class="badge bg-warning text-dark">Pendiente</span>
+
+                            <?php elseif ((int) $pago['anulado'] === 1): ?>
+
                                 <span class="badge bg-danger">Anulado</span>
+
                             <?php else: ?>
+
                                 <span class="badge bg-success">Pagado</span>
-                            <?php endif; ?>
-                        </td>
+
+                            <?php endif; ?>                        </td>
                         <td><?= esc($pago['usuario']) ?></td>
                         <td>
-                            <a
-                                href="<?= base_url('pagos/receipt/' . $pago['pago_id']) ?>"
-                                class="btn btn-primary btn-sm"
-                                onclick="window.open(this.href, '_blank'); return false;">
-                                Recibo
-                            </a>
 
-                            <?php if (
-                                (int) $pago['anulado'] === 0 &&
-                                strtolower(trim((string) session()->get('rol_nombre'))) !== 'lector'
-                            ): ?> <a href="<?= base_url('pagos/edit/' . $pago['pago_id']) ?>" class="btn btn-warning btn-sm">Editar</a>
-                                <form action="<?= base_url('pagos/annul/' . $pago['pago_id']) ?>" method="post" class="d-inline">
-                                    <?= csrf_field() ?>
-                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Deseas anular este pago?')">Anular</button>
-                                </form>
+                            <?php if (!empty($pago['pendiente'])): ?>
+
+                                <a
+                                    href="<?= base_url('pagos/new?lectura_id=' . $pago['lectura_id']) ?>"
+                                    class="btn btn-primary btn-sm">
+                                    Registrar pago
+                                </a>
+
+                            <?php else: ?>
+
+                                <a
+                                    href="<?= base_url('pagos/receipt/' . $pago['pago_id']) ?>"
+                                    class="btn btn-primary btn-sm"
+                                    onclick="window.open(this.href, '_blank'); return false;">
+                                    Recibo
+                                </a>
+
+                                <?php if (
+                                    (int) $pago['anulado'] === 0 &&
+                                    strtolower(trim((string) session()->get('rol_nombre'))) !== 'lector'
+                                ): ?>
+
+                                    <a
+                                        href="<?= base_url('pagos/edit/' . $pago['pago_id']) ?>"
+                                        class="btn btn-warning btn-sm">
+                                        Editar
+                                    </a>
+
+                                    <form
+                                        action="<?= base_url('pagos/annul/' . $pago['pago_id']) ?>"
+                                        method="post"
+                                        class="d-inline">
+
+                                        <?= csrf_field() ?>
+
+                                        <button
+                                            type="submit"
+                                            class="btn btn-danger btn-sm"
+                                            onclick="return confirm('¿Deseas anular este pago?')">
+                                            Anular
+                                        </button>
+
+                                    </form>
+
+                                <?php endif; ?>
+
                             <?php endif; ?>
-                        </td>
-                    </tr>
+
+                        </td>                    </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
