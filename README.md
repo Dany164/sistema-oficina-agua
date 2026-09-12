@@ -4,6 +4,8 @@ Sistema web para digitalizar el control de una oficina comunitaria de agua potab
 
 [Tablero de Jira](https://danysspace.atlassian.net/jira/software/projects/SCRUM/boards/1)
 
+[Manual de Usuario](docs\modelo-er\Manual-de-usuario-Sistema-de-Oficina-de-Agua.pdf)
+
 ## Tabla de Contenidos
 - [Equipo de Desarrollo](#equipo-de-desarrollo)
 - [Requisitos](#requisitos)
