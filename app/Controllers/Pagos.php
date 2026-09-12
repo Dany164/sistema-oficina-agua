@@ -34,6 +34,54 @@ class Pagos extends BaseController
 
         $fechaDesde = $request->getGet('fecha_desde');
         $fechaHasta = $request->getGet('fecha_hasta');
+        $estado = $request->getGet('estado');
+
+        if ($estado === 'pendiente') {
+            $pendientes = db_connect()->table('Tb_Lecturas l')
+                ->select([
+                    'l.lectura_id',
+                    'l.fecha AS fecha_lectura',
+                    'l.monto_total AS monto',
+                    'c.numero_registro',
+                    'cl.nombre AS cliente',
+                ])
+                ->join('Tb_Contadores c', 'c.contador_id = l.contador_id')
+                ->join('Tb_Clientes cl', 'cl.cliente_id = c.cliente_id')
+                ->join('Tb_Pagos p', 'p.lectura_id = l.lectura_id AND p.anulado = 0', 'left')
+                ->where('p.pago_id IS NULL', null, false);
+
+            if ($fechaDesde) {
+                $pendientes->where('l.fecha >=', $fechaDesde);
+            }
+
+            if ($fechaHasta) {
+                $pendientes->where('l.fecha <=', $fechaHasta);
+            }
+
+            if ($request->getGet('cliente')) {
+                $pendientes->like('cl.nombre', $request->getGet('cliente'));
+            }
+
+            $pagos = $pendientes
+                ->orderBy('l.fecha', 'DESC')
+                ->get()
+                ->getResultArray();
+
+            foreach ($pagos as &$pago) {
+                $pago['pendiente'] = true;
+                $pago['numero_recibo'] = '-';
+                $pago['fecha_pago'] = $pago['fecha_lectura'];
+                $pago['metodo'] = '-';
+                $pago['usuario'] = '-';
+                $pago['anulado'] = 0;
+            }
+
+            return view('pagos/index', [
+                'title' => 'Pagos',
+                'pagos' => $pagos,
+                'filtros' => $request->getGet(),
+            ]);
+        }
 
         if ($fechaDesde && $fechaHasta && $fechaDesde > $fechaHasta) {
             return redirect()->to('/pagos')->with(
@@ -52,12 +100,12 @@ class Pagos extends BaseController
         if ($request->getGet('cliente')) {
             $builder->like('cl.nombre', $request->getGet('cliente'));
         }
-        if ($request->getGet('estado') === 'pagado') {
+        if ($estado === 'pagado') {
             $builder->where('p.anulado', 0);
-        } elseif ($request->getGet('estado') === 'anulado') {
+        } elseif ($estado === 'anulado') {
             $builder->where('p.anulado', 1);
         }
-
+        
         $pagos = $builder->orderBy('p.fecha_pago', 'DESC')
             ->orderBy('p.pago_id', 'DESC')
             ->get()
