@@ -56,11 +56,19 @@ $lecturas = $lecturas ?? [];
                     <label for="fecha_pago" class="form-label">Fecha de pago</label>
                     <input type="date" class="form-control" id="fecha_pago" name="fecha_pago" value="<?= esc(old('fecha_pago', $pago['fecha_pago'] ?? '')) ?>" required>
                 </div>
-                <div class="col-md-6">
-                    <label for="numero_recibo" class="form-label">Número de recibo</label>
-                    <input type="text" class="form-control" id="numero_recibo" name="numero_recibo" maxlength="20" value="<?= esc(old('numero_recibo', $pago['numero_recibo'] ?? '')) ?>" required>
-                </div>
-                <div class="col-md-6">
+                    <?php if ($esEdicion): ?>
+                        <div class="col-md-6">
+                            <label class="form-label">Número de recibo</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                value="<?= esc($pago['numero_recibo']) ?>"
+                                readonly>
+                            <div class="form-text">
+                                El número de recibo es generado automáticamente por el sistema.
+                            </div>
+                        </div>
+                    <?php endif; ?>                <div class="col-md-6">
                     <label for="metodos_pago_id" class="form-label">Método de pago</label>
                     <select class="form-select" id="metodos_pago_id" name="metodos_pago_id" required>
                         <option value="">Seleccione un método</option>
